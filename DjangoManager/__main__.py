@@ -7,6 +7,7 @@ import logs
 from tabs import TabManager
 from cfg import ConfigManager
 from menu import MenuManager
+from style import StyleManager
 
 
 log = logging.getLogger(__name__)
@@ -32,6 +33,7 @@ class Root:
         self.window.title(self.name)
         
         # Get & setup managers
+        self.style = StyleManager(self)  # must be called first
         self.cfg = ConfigManager(self)
         self.tabs = TabManager(self)
         self.menu = MenuManager(self)
