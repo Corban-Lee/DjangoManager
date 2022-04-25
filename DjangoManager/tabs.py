@@ -1,14 +1,16 @@
-from fileinput import close
 import logging
+from os import sep
 import tkinter
 from tkinter import ttk
 from PIL import Image, ImageTk
+
+from _constants import IMAGES_DIR
 
 
 log = logging.getLogger(__name__)
 
 
-IMAGES_DIR = 'DjangoManager/images'
+
 
 
 class Tab(ttk.Frame):
@@ -18,9 +20,10 @@ class Tab(ttk.Frame):
     def __init__(self, master, text:str):
         super().__init__(master, style=f'Tab.TFrame')
         self.bind('<Button-1>', self.drag)
+        self.rowconfigure(index=1, weight=1)
         
         self.text = ttk.Label(self, text=text)
-        self.text.pack(side='left', fill='both', expand=True, padx=15, pady=1)
+        self.text.grid(column=0, row=1, sticky='nsew')
         self.text.bind('<Button-1>', self.drag)
 
         # get 'x' images for close button
@@ -32,7 +35,13 @@ class Tab(ttk.Frame):
             self.close_imgs[color] = img
         
         self.close_btn = ttk.Button(self, command=self._destroy, cursor='hand2')
-        self.close_btn.pack(side='right', fill='y')
+        self.close_btn.grid(column=1, row=1, sticky='nes')
+
+        vert_sep = ttk.Frame(self, style='TabSeparator.TFrame', width=1)
+        vert_sep.grid(column=2, row=1, sticky='ns')
+        
+        horz_sep = ttk.Frame(self, style='TabSeparator.TFrame', height=1)
+        horz_sep.grid(column=0, columnspan=3, row=0, sticky='we')
 
         # reserves a space when moving the tab
         self.reserved_space = ttk.Frame(self.master)
@@ -49,7 +58,7 @@ class Tab(ttk.Frame):
         self.close_btn.config(style='SelectedTabBtn.TLabel')
         
         # get 'x' image for close button
-        img = self.close_imgs['light']
+        img = self.close_imgs['dark'] # ['light']
         self.close_btn.image = img
         self.close_btn.config(image=img)
     
@@ -85,7 +94,7 @@ class Tab(ttk.Frame):
         
         original_x = self.winfo_x()
         current_x = original_x - event.x_root
-        trough_height = self.master.winfo_height() - 2  # accounts for margin
+        trough_height = self.master.winfo_height() - 1  # accounts for margin
         
         def release(event:tkinter.Event) -> None:
             """Left mouse button is released"""
@@ -136,9 +145,9 @@ class Tab(ttk.Frame):
             
             new_x = event.x_root + current_x
             
-            # prevent tab going past the trough border
-            if not (new_x >= self.master.winfo_width() - self.winfo_width() or new_x < 0):
-                self.place(x=new_x, h=trough_height)
+            # prevent tab going past the trough border -> uncomment & indent below to reactivate
+            # if not (new_x >= self.master.winfo_width() - self.winfo_width() or new_x < 0):
+            self.place(x=new_x, h=trough_height)
     
             # TODO: did this to reduce fps lag. Don't know if it actually works. Test it?
             self.update()
@@ -159,7 +168,9 @@ class TabManager(ttk.Frame):
         self.pack_propagate(False)
         self.pack(side='top', fill='x')
         
-        ttk.Separator(self, orient='horizontal').pack(side='bottom', fill='x')
+        # workaround for removing tkinter separators border
+        sep = ttk.Frame(self, style='TabSeparator.TFrame', height=1)
+        sep.pack(side='bottom', fill='x')
         
     def add_tab(self, text:str):
         self.tabs.append(Tab(self, text))
