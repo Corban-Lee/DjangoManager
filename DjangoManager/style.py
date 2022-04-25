@@ -52,8 +52,8 @@ class StyleManager(ttk.Style):
         self.map(
             'TabBtn.TLabel',
             background=(
-                ('pressed', '#F1F1F1'), 
-                ('active', '#F1F1F1')
+                ('pressed', 'darkgray'), 
+                ('active', 'lightgray')
             )
         )
         
@@ -89,7 +89,7 @@ class StyleManager(ttk.Style):
             'SelectedTabBtn.TLabel',
             background=(
                 ('pressed', 'red'), 
-                ('active', 'orange')
+                ('active', 'darkgray')
             )
         )
         
