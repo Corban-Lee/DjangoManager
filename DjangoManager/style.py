@@ -19,6 +19,9 @@ class StyleManager(ttk.Style):
                         ('Button.label', {'sticky': 'nswe'})
             ]})]})])
         
+        # Workaround for removing tkinter separators border
+        self.configure('TabSeparator.TFrame', background='gray60')
+        
         ###########
         
         # Styles for tabs
@@ -34,26 +37,27 @@ class StyleManager(ttk.Style):
             'Tab.TFrame',
             border=1,
             relief='flat',
-            background='#F1F1F1'
+            background='#D9D9D9'
         )
         
         # the text on the tabs
         self.configure(
             'TabText.TLabel',
-            background='#F1F1F1'
+            background='#D9D9D9',
+            padding=(5, 1, 25, 0)
         )
         
         # the close button for the tabs
         self.configure(
             'TabBtn.TLabel',
-            background='#F1F1F1',
+            background='#D9D9D9',
             padding=(5, 0, 5, 0)
         )
         self.map(
             'TabBtn.TLabel',
             background=(
-                ('pressed', 'darkgray'), 
-                ('active', 'lightgray')
+                ('pressed', 'gray75'), 
+                ('active', 'gray80')
             )
         )
         
@@ -70,26 +74,27 @@ class StyleManager(ttk.Style):
         
         self.configure(
             'SelectedTab.TFrame',
-            background='gray',
+            background='gray80',
             relief='flat'
         )
         
         self.configure(
             'SelectedTabText.TLabel',
-            background='gray',
-            foreground='white'
+            background='gray80',
+            # foreground='white',
+            padding=(5, 1, 25, 0)
         )
         
         self.configure(
             'SelectedTabBtn.TLabel',
-            background='gray',
+            background='gray80',
             padding=(5, 0, 5, 0)
         )
         self.map(
             'SelectedTabBtn.TLabel',
             background=(
-                ('pressed', 'red'), 
-                ('active', 'darkgray')
+                ('pressed', 'gray70'), 
+                ('active', 'gray75')
             )
         )
         
