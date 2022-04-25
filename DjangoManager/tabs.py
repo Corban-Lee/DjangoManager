@@ -19,22 +19,25 @@ class Tab(ttk.Frame):
         super().__init__(master, style=f'Tab.TFrame')
         self.bind('<Button-1>', self.drag)
         
-        self.text = ttk.Label(self, text=text, style=f'TabText.TLabel')
+        self.text = ttk.Label(self, text=text)
         self.text.pack(side='left', fill='both', expand=True, padx=15, pady=1)
         self.text.bind('<Button-1>', self.drag)
+
+        # get 'x' images for close button
+        self.close_imgs = {}
+        for color in ('light', 'dark'):
+            img = Image.open(f'{IMAGES_DIR}/tab_close_{color}.png')
+            img = img.resize((15, 15))
+            img = ImageTk.PhotoImage(img)
+            self.close_imgs[color] = img
         
-        # get 'x' image for close button
-        img = Image.open(f'{IMAGES_DIR}/tab_close_dark.png')
-        img = img.resize((15,15), Image.ANTIALIAS)
-        close_btn_img = ImageTk.PhotoImage(img)
-        
-        self.close_btn = ttk.Button(self, image=close_btn_img, style='TabBtn.TLabel', command=self._destroy)
-        self.close_btn.image = close_btn_img  # tk is dumb and requires an attribute of the Image obj. Attr name doesnt matter.
-        self.close_btn.pack(side='right', fill='y', padx=(0, 1), pady=1)
+        self.close_btn = ttk.Button(self, command=self._destroy, cursor='hand2')
+        self.close_btn.pack(side='right', fill='y')
 
         # reserves a space when moving the tab
-        self.reserved_space = ttk.Frame(self.master, style='TabReserved.TFrame')
+        self.reserved_space = ttk.Frame(self.master)
         
+        self.deselect()
         self.pack(side='left', fill='y')
         
     def select(self):
@@ -44,14 +47,22 @@ class Tab(ttk.Frame):
         self.config(style='SelectedTab.TFrame')
         self.text.config(style='SelectedTabText.TLabel')
         self.close_btn.config(style='SelectedTabBtn.TLabel')
+        
+        # get 'x' image for close button
+        img = self.close_imgs['light']
+        self.close_btn.image = img
+        self.close_btn.config(image=img)
     
     def deselect(self):
-        assert self.selected
         self.selected = False
         
         self.config(style='Tab.TFrame')
         self.text.config(style='TabText.TLabel')
         self.close_btn.config(style='TabBtn.TLabel')
+        
+        img = self.close_imgs['dark']
+        self.close_btn.image = img
+        self.close_btn.config(image=img)
             
     def _destroy(self):
         self.destroy()
@@ -160,7 +171,6 @@ class TabManager(ttk.Frame):
                 break
             
         tab_to_select.select()
-        print('new tab selected')
     
     def remove_tab(self):
         pass
