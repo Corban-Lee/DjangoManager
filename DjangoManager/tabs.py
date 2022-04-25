@@ -1,5 +1,4 @@
 import logging
-from os import sep
 import tkinter
 from tkinter import ttk
 from PIL import Image, ImageTk
@@ -8,9 +7,6 @@ from _constants import IMAGES_DIR
 
 
 log = logging.getLogger(__name__)
-
-
-
 
 
 class Tab(ttk.Frame):
@@ -164,9 +160,12 @@ class TabManager(ttk.Frame):
     tabs: list[Tab] = []
     
     def __init__(self, root):
-        super().__init__(root.window, height=25, style='TabTrough.TFrame')
+        super().__init__(root.window, style='TabTrough.TFrame')
+        self.root = root
+        self.config(height=root.cfg.data['tabs']['trough_height'])
         self.pack_propagate(False)
         self.pack(side='top', fill='x')
+        self.bind('<Configure>', self.on_trough_resize)
         
         # workaround for removing tkinter separators border
         sep = ttk.Frame(self, style='TabSeparator.TFrame', height=1)
@@ -174,6 +173,10 @@ class TabManager(ttk.Frame):
         
     def add_tab(self, text:str):
         self.tabs.append(Tab(self, text))
+        
+    def on_trough_resize(self, event:tkinter.Event):
+        self.root.cfg.data['tabs']['trough_height'] = self.winfo_height()
+        self.root.cfg.write()
         
     def select_tab(self, tab_to_select:Tab):
         for tab in self.tabs:

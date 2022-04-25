@@ -45,8 +45,6 @@ class Root:
         self.tabs = TabManager(self)
         self.menu = MenuManager(self)
         
-        self.cfg.restore_defaults()
-        
         self.paned_window.add(self.tabs, minsize=25)
         self.paned_window.add(self.control_frame, minsize=200)
 
