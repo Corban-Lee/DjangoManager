@@ -20,7 +20,7 @@ def _open_file(dirs:AppDirs) -> TextIO:
             return (Path(f'{dirs.user_log_dir}/{filename}').open('x', encoding='utf-8'))
         except FileExistsError:
             continue
-        
+
 def _destroy_old_logs(dirs:AppDirs):
     for path in Path(dirs.user_log_dir).glob('*.txt'):
         prefix = path.stem.split('_')[0]
