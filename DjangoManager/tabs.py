@@ -3,7 +3,7 @@ import tkinter
 from tkinter import ttk
 from PIL import Image, ImageTk
 
-from _constants import IMAGES_DIR
+from constants import IMAGES_DIR
 
 
 log = logging.getLogger(__name__)
@@ -65,6 +65,7 @@ class Tab(ttk.Frame):
         self.text.config(style='TabText.TLabel')
         self.close_btn.config(style='TabBtn.TLabel')
         
+        # get 'x' image for close button
         img = self.close_imgs['dark']
         self.close_btn.image = img
         self.close_btn.config(image=img)

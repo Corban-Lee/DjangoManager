@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 from appdirs import AppDirs
 
-import _logs
+import logs
 from tabs import TabManager
 from cfg import ConfigManager
 from menu import MenuManager
@@ -22,7 +22,7 @@ class Root:
     name = 'DjangoManager'  # name shouldn't contain spaces or special characters
     window = tkinter.Tk()
     dirs = AppDirs(name, __author__, __version__)
-    _logs.setup(name, __version__, dirs)
+    logs.setup(name, __version__, dirs)
 
     def __init__(self):
         
@@ -33,17 +33,17 @@ class Root:
         self.window.minsize(700, 400)
         self.window.title(self.name)
         
-        self.paned_window = tkinter.PanedWindow(self.window, orient='vertical', sashwidth=3, background='#D9D9D9')
-        self.paned_window.pack(fill='both', expand=True)
-        
-        self.control_frame = ControlFrame(self)
-        self.control_frame.pack(side='bottom', fill='both', expand=True)
+        self.paned_window = tkinter.PanedWindow(self.window, orient='vertical', sashwidth=3, background='#E4E4E4')
+        self.paned_window.pack(side='top', fill='both', expand=True)
         
         # Get & setup managers
         self.cfg = ConfigManager(self)
         self.style = StyleManager(self)  # must be called first
         self.tabs = TabManager(self)
         self.menu = MenuManager(self)
+        
+        self.control_frame = ControlFrame(self)
+        self.control_frame.pack(side='bottom', fill='both', expand=True)
         
         self.paned_window.add(self.tabs, minsize=25)
         self.paned_window.add(self.control_frame, minsize=200)

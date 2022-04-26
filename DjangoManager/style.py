@@ -22,6 +22,12 @@ class StyleManager(ttk.Style):
         # Workaround for removing tkinter separators border
         self.configure('TabSeparator.TFrame', background='gray60')
         
+        self.configure('TFrame', background='#E4E4E4')
+        self.paned_window = {
+            'background': '#E4E4E4',
+            'sashwidth': 3
+        }
+        
         ###########
         
         # Styles for tabs
@@ -65,7 +71,7 @@ class StyleManager(ttk.Style):
         # a tab is actively being moved.
         self.configure(
             'TabReserved.TFrame',
-            background='#DFDFDF'
+            background='gray45'
         )
         
         ########
@@ -74,27 +80,27 @@ class StyleManager(ttk.Style):
         
         self.configure(
             'SelectedTab.TFrame',
-            background='gray80',
+            background='gray70',
             relief='flat'
         )
         
         self.configure(
             'SelectedTabText.TLabel',
-            background='gray80',
+            background='gray70',
             # foreground='white',
             padding=(5, 1, 25, 0)
         )
         
         self.configure(
             'SelectedTabBtn.TLabel',
-            background='gray80',
+            background='gray70',
             padding=(5, 0, 5, 0)
         )
         self.map(
             'SelectedTabBtn.TLabel',
             background=(
-                ('pressed', 'gray70'), 
-                ('active', 'gray75')
+                ('pressed', 'gray60'), 
+                ('active', 'gray65')
             )
         )
         
