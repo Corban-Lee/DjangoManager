@@ -94,14 +94,21 @@ class Tab(ttk.Frame):
         
         def release(event:tkinter.Event) -> None:
             """Left mouse button is released"""
-            
-            # 'x' coordinate, used to determine where to put the widget when dropped
-            x: int = int(self.winfo_x() + (self.winfo_width() / 3))
 
             # create a list of everything on the tab trough excluding self
             items = self.master.tabs.copy()
             items.append(self.reserved_space)
             items.remove(self)
+
+            # 'x' coordinate, used to determine where to put the widget when dropped
+            x: int = int(self.winfo_x() + (self.winfo_width() / 3))
+
+            # widget is offscreen to the left. put it before the first item then 
+            # return nothing to end the func call.
+            if x < 0:
+                self.pack(side='left', fill='y', before=items[0])
+                self.reserved_space.pack_forget()
+                return
 
             
             for item in items:
