@@ -22,11 +22,11 @@ class Root:
     name = 'DjangoManager'  # name shouldn't contain spaces or special characters
     window = tkinter.Tk()
     dirs = AppDirs(name, __author__, __version__)
-    logs.setup(name, __version__, dirs)
 
     def __init__(self):
         
         self._validate_dirs()
+        logs.setup(self.name, __version__, self.dirs)
         
         # setup window
         self.window.protocol('WM_DELETE_WINDOW', self.on_exit)
