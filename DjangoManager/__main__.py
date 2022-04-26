@@ -19,9 +19,10 @@ __author__ = 'Corban-Lee'
 
 class Root:
     
-    name = 'DjangoManager'  # name shouldn't contain spaces or special characters
+    name = 'Django Manager'
+    safe_name = 'DjangoManager'
     window = tkinter.Tk()
-    dirs = AppDirs(name, __author__, __version__)
+    dirs = AppDirs(safe_name, __author__, __version__)
 
     def __init__(self):
         
@@ -46,7 +47,7 @@ class Root:
         self.menu = MenuManager(self)
         
         self.paned_window.add(self.tabs, minsize=25)
-        self.paned_window.add(self.control_frame, minsize=200)
+        self.paned_window.add(self.control_frame, minsize=20)
 
 
     def run(self) -> None:
