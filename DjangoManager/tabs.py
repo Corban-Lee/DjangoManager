@@ -3,7 +3,7 @@ import tkinter
 from tkinter import ttk
 from PIL import Image, ImageTk
 
-from _constants import IMAGES_DIR
+from constants import IMAGES_DIR
 
 
 log = logging.getLogger(__name__)

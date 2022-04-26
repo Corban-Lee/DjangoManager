@@ -3,7 +3,7 @@ import logging
 import os
 from typing import Any
 
-from _constants import CONFIG_FILENAME
+from constants import CONFIG_FILENAME
 
 
 log = logging.getLogger(__name__)

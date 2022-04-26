@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 from appdirs import AppDirs
 
-import _logs
+import logs
 from tabs import TabManager
 from cfg import ConfigManager
 from menu import MenuManager
@@ -22,7 +22,7 @@ class Root:
     name = 'DjangoManager'  # name shouldn't contain spaces or special characters
     window = tkinter.Tk()
     dirs = AppDirs(name, __author__, __version__)
-    _logs.setup(name, __version__, dirs)
+    logs.setup(name, __version__, dirs)
 
     def __init__(self):
         
