@@ -4,6 +4,7 @@ from itertools import count
 from pathlib import Path
 from typing import TextIO
 from datetime import datetime, timedelta
+
 from constants import FILENAME_FORMAT_PREFIX, MAX_LOGFILE_AGE_DAYS
 
 
