@@ -35,7 +35,7 @@ class Root:
         
         self.paned_window = tkinter.PanedWindow(self.window, orient='vertical', sashwidth=3, background='#E4E4E4')
         self.paned_window.pack(side='top', fill='both', expand=True)
-        
+        asdasd
         # Get & setup managers
         self.cfg = ConfigManager(self)
         self.style = StyleManager(self)  # must be called first
