@@ -23,7 +23,9 @@ class StyleManager(ttk.Style):
         self.configure(
             'Header.TLabel',
             font=('TkDefaultFont', 13),
-            padding=(0, 0, 0, 15)
+            padding=(10, 0, 0, 15),
+            background='#E4E4E4',
+
         )
 
         # Workaround for removing tkinter separators border
