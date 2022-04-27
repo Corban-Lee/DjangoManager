@@ -18,14 +18,12 @@ __author__ = 'Corban-Lee'
 
 
 class Root:
-    
     name = 'Django Manager'
     safe_name = 'DjangoManager'
     window = tkinter.Tk()
     dirs = AppDirs(safe_name, __author__, __version__)
 
     def __init__(self):
-        
         self._validate_dirs()
         logs.setup(self.name, __version__, self.dirs)
         
@@ -34,7 +32,10 @@ class Root:
         self.window.minsize(700, 400)
         self.window.title(self.name)
         
-        self.paned_window = tkinter.PanedWindow(self.window, orient='vertical', sashwidth=3, background='#E4E4E4')
+        self.paned_window = tkinter.PanedWindow(
+            self.window, orient='vertical', sashwidth=3, 
+            background='#E4E4E4'
+        )
         self.paned_window.pack(side='top', fill='both', expand=True)
 
         # Get & setup managers
@@ -49,12 +50,13 @@ class Root:
         self.paned_window.add(self.tabs, minsize=25)
         self.paned_window.add(self.control_frame, minsize=20)
 
-
     def run(self) -> None:
+        """Start the app"""
         log.info('starting window main loop')
         self.window.mainloop()
         
     def on_exit(self) -> SystemExit:
+        """Properly exits the app"""
         log.info('exiting app')
         self.window.destroy()
         raise SystemExit
