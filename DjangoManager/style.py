@@ -1,4 +1,5 @@
 import logging
+import tkinter
 from tkinter import ttk
 
 
@@ -19,6 +20,12 @@ class StyleManager(ttk.Style):
                         ('Button.label', {'sticky': 'nswe'})
             ]})]})])
         
+        self.configure(
+            'Header.TLabel',
+            font=('TkDefaultFont', 13),
+            padding=(0, 0, 0, 15)
+        )
+
         # Workaround for removing tkinter separators border
         self.configure('TabSeparator.TFrame', background='gray60')
         

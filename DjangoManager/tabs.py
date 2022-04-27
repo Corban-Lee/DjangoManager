@@ -3,6 +3,7 @@ import tkinter
 from tkinter import ttk
 from PIL import Image, ImageTk
 
+from utils import text_length_check
 from constants import IMAGES_DIR
 
 
@@ -13,12 +14,13 @@ class Tab(ttk.Frame):
     
     selected: bool = False
 
-    def __init__(self, master, text:str):
+    def __init__(self, master, text:str, command):
         super().__init__(master, style=f'Tab.TFrame')
         self.bind('<Button-1>', self.drag)
         self.rowconfigure(index=1, weight=1)
         
-        self.text = ttk.Label(self, text=text)
+        # text displayed on the tab
+        self.text = ttk.Label(self, text=text_length_check(text, 20))
         self.text.grid(column=0, row=1, sticky='nsew')
         self.text.bind('<Button-1>', self.drag)
 
@@ -80,7 +82,7 @@ class Tab(ttk.Frame):
     def drag(self, event:tkinter.Event) -> None:
         """Allows the user to drag the tab"""
         
-        self.master.select_tab(self)
+        self.master.on_tab_select(self)
         
         # create reserved space for the widget
         self.reserved_space.config(width=self.winfo_width())
@@ -95,22 +97,29 @@ class Tab(ttk.Frame):
         
         def release(event:tkinter.Event) -> None:
             """Left mouse button is released"""
-            
-            # 'x' coordinate, used to determine where to put the widget when dropped
-            x: int = int(self.winfo_x() + (self.winfo_width() / 3))
 
             # create a list of everything on the tab trough excluding self
             items = self.master.tabs.copy()
             items.append(self.reserved_space)
             items.remove(self)
 
-            
+            # 'x' coordinate, used to determine where to put the widget when dropped
+            x: int = int(self.winfo_x() + (self.winfo_width() / 3))
+
             for item in items:
                 
                 # is self overlapping item?
                 tab_x = item.winfo_x()
                 if x in range(tab_x, tab_x + item.winfo_width()):
                     break
+
+                # widget is offscreen to the left. put it before the first item then 
+                # return nothing to end the func call.
+                if x <= 0 and tab_x == 0:
+                    self.pack(side='left', fill='y', before=item)
+                    self.reserved_space.pack_forget()
+                    print('placed item at front')
+                    return
                 
             # self is not overlapping any items: move it to the end of
             # the trough.
@@ -163,30 +172,41 @@ class TabManager(ttk.Frame):
     def __init__(self, root):
         super().__init__(root.window, style='TabTrough.TFrame')
         self.root = root
-        self.config(height=root.cfg.data['tabs']['trough_height'])
+
+        # dont want children to determine the size of this widget.
         self.pack_propagate(False)
         self.pack(side='top', fill='x')
+
+        # saves the height of the scrollbar to the config file so it will be the
+        # same when the user next loads the app.
         self.bind('<Configure>', self.on_trough_resize)
+        self.config(height=root.cfg.data['tabs']['trough_height'])  # get height from config
         
-        # workaround for removing tkinter separators border
+        # using a frame as a divider instead of a tkinter.Separator object because
+        # this tkinter object has borders that I don't know how to remove.
         sep = ttk.Frame(self, style='TabSeparator.TFrame', height=1)
         sep.pack(side='bottom', fill='x')
         
-    def add_tab(self, text:str):
-        self.tabs.append(Tab(self, text))
+    def add_tab(self, text:str, command=None):
+        """
+            Append a new tab to the trough. Provide text that will be displayed on the tab and a
+            command that will be called when the tab is clicked via the left mouse button.
+        """
+        self.tabs.append(Tab(self, text, command))
         
     def on_trough_resize(self, event:tkinter.Event):
+        """Writes the current height of the trough to the config file"""
         self.root.cfg.data['tabs']['trough_height'] = self.winfo_height()
         self.root.cfg.write()
         
-    def select_tab(self, tab_to_select:Tab):
+    def on_tab_select(self, clicked_tab:Tab):
+        """Deselects any tab that wasn't the last clicked tab"""
         for tab in self.tabs:
             if tab.selected:
                 tab.deselect()
-                break
+
+                # break because their should only be one tab active so
+                # there is no need to re-iterate.
+                break  
             
-        tab_to_select.select()
-    
-    def remove_tab(self):
-        pass
-        
+        clicked_tab.select()

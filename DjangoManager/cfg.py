@@ -4,7 +4,7 @@ import os
 from typing import Any
 
 from constants import CONFIG_FILENAME
-asdasd
+
 
 log = logging.getLogger(__name__)
 

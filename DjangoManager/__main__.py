@@ -19,14 +19,15 @@ __author__ = 'Corban-Lee'
 
 class Root:
     
-    name = 'DjangoManager'  # name shouldn't contain spaces or special characters
+    name = 'Django Manager'
+    safe_name = 'DjangoManager'
     window = tkinter.Tk()
-    dirs = AppDirs(name, __author__, __version__)
-    logs.setup(name, __version__, dirs)
+    dirs = AppDirs(safe_name, __author__, __version__)
 
     def __init__(self):
         
         self._validate_dirs()
+        logs.setup(self.name, __version__, self.dirs)
         
         # setup window
         self.window.protocol('WM_DELETE_WINDOW', self.on_exit)
@@ -35,7 +36,7 @@ class Root:
         
         self.paned_window = tkinter.PanedWindow(self.window, orient='vertical', sashwidth=3, background='#E4E4E4')
         self.paned_window.pack(side='top', fill='both', expand=True)
-        asdasd
+
         # Get & setup managers
         self.cfg = ConfigManager(self)
         self.style = StyleManager(self)  # must be called first
@@ -46,7 +47,7 @@ class Root:
         self.control_frame.pack(side='bottom', fill='both', expand=True)
         
         self.paned_window.add(self.tabs, minsize=25)
-        self.paned_window.add(self.control_frame, minsize=200)
+        self.paned_window.add(self.control_frame, minsize=20)
 
 
     def run(self) -> None:
