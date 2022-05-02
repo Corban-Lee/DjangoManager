@@ -29,6 +29,10 @@ class MenuManager(tkinter.Menu):
         editmenu = tkinter.Menu(self, tearoff=False)
         self.add_cascade(menu=editmenu, label='Edit')
         
+        editmenu.add_command(label='Change Project Name', command=None)
+        editmenu.add_command(label='Change Project Directory', command=None)
+        editmenu.add_command(label='Change Environment Directory', command=None)
+        
         # viewmenu
         viewmenu = tkinter.Menu(self, tearoff=False)
         self.add_cascade(menu=viewmenu, label='View')
