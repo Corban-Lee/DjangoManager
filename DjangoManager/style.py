@@ -14,28 +14,38 @@ class StyleManager(ttk.Style):
         # redefined tbutton layout without dotted focus outline
         self.layout(
             'TButton',
-            [('Button.button', 
-                {'sticky': 'nswe', 'children': [
-                    ('Button.padding', {'sticky': 'nswe', 'children': [
-                        ('Button.label', {'sticky': 'nswe'})
-            ]})]})])
+            [('Button.button', {'sticky': 'nsew', 'children': [
+                ('Button.border', 
+                    {'sticky': 'nswe', 'border': '1', 'children': [
+                        ('Button.padding', {'sticky': 'nswe', 'children': [
+                            ('Button.label', {'sticky': 'nswe'})
+            ]})]})]})])
         
         self.configure(
             'Header.TLabel',
             font=('TkDefaultFont', 13),
-            padding=(10, 0, 0, 15),
-            background='#E4E4E4',
-
+            padding=(0, 0, 0, 15),
         )
+        
+        self.configure('TLabel', background='#E4E4E4')
 
-        # Workaround for removing tkinter separators border
-        self.configure('TabSeparator.TFrame', background='gray60')
+        self.configure('TabSeparator.TFrame', background='#a5a4a5')
         
         self.configure('TFrame', background='#E4E4E4')
         self.paned_window = {
             'background': '#E4E4E4',
             'sashwidth': 3
         }
+        
+        self.configure('TButton', borderwidth=0)
+        self.configure('BtnBorder.TFrame', background='#a5a4a5')
+        
+        self.configure(
+            'TEntry',
+            background='gray90',
+            borderwidth=0,
+            padding=(5,2,5,2)
+        )
         
         ###########
         
@@ -44,7 +54,7 @@ class StyleManager(ttk.Style):
         # the trough contains tabs
         self.configure(
             'TabTrough.TFrame',
-            background='#E9E9E9'
+            background='gray95'
         )
         
         # the tabs themselves
@@ -61,7 +71,7 @@ class StyleManager(ttk.Style):
             background='#D9D9D9',
             padding=(5, 1, 25, 0)
         )
-        
+
         # the close button for the tabs
         self.configure(
             'TabBtn.TLabel',
@@ -96,7 +106,6 @@ class StyleManager(ttk.Style):
         self.configure(
             'SelectedTabText.TLabel',
             background='gray70',
-            # foreground='white',
             padding=(5, 1, 25, 0)
         )
         
