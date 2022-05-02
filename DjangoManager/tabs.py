@@ -93,7 +93,7 @@ class Tab(ttk.Frame):
         
         original_x = self.winfo_x()
         current_x = original_x - event.x_root
-        trough_height = self.master.winfo_height() - 1  # accounts for margin
+        trough_height = self.master.winfo_height()
         
         def release(event:tkinter.Event) -> None:
             """Left mouse button is released"""
@@ -181,11 +181,6 @@ class TabManager(ttk.Frame):
         # same when the user next loads the app.
         self.bind('<Configure>', self.on_trough_resize)
         self.config(height=root.cfg.data['tabs']['trough_height'])  # get height from config
-        
-        # using a frame as a divider instead of a tkinter.Separator object because
-        # this tkinter object has borders that I don't know how to remove.
-        sep = ttk.Frame(self, style='TabSeparator.TFrame', height=1)
-        sep.pack(side='bottom', fill='x')
         
     def add_tab(self, text:str, command=None):
         """
