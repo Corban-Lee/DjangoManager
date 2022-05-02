@@ -2,13 +2,15 @@ import tkinter
 import logging
 from pathlib import Path
 from appdirs import AppDirs
+from PIL import Image, ImageTk
 
 import logs
 from tabs import TabManager
-from cfg import ConfigManager
+from utils import ConfigManager
 from menu import MenuManager
 from style import StyleManager
 from controls import ControlFrame
+from constants import IMAGES_DIR
 
 
 log = logging.getLogger(__name__)
@@ -31,10 +33,11 @@ class Root:
         self.window.protocol('WM_DELETE_WINDOW', self.on_exit)
         self.window.minsize(700, 400)
         self.window.title(self.name)
+        self.window.iconphoto(False, ImageTk.PhotoImage(Image.open(IMAGES_DIR+'/icon.png')))
         
         self.paned_window = tkinter.PanedWindow(
-            self.window, orient='vertical', sashwidth=3, 
-            background='#E4E4E4'
+            self.window, orient='vertical', sashwidth=1, bd=0,
+            background='#a3a2a2'
         )
         self.paned_window.pack(side='top', fill='both', expand=True)
 
