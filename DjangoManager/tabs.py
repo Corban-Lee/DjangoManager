@@ -1,9 +1,9 @@
 import logging
 import tkinter
-from tkinter import ttk
+from tkinter import ttk, simpledialog, messagebox, filedialog
 from PIL import Image, ImageTk
 
-from utils import text_length_check
+from utils import text_length_check, Project
 from constants import IMAGES_DIR
 
 
@@ -182,11 +182,20 @@ class TabManager(ttk.Frame):
         self.bind('<Configure>', self.on_trough_resize)
         self.config(height=root.cfg.data['tabs']['trough_height'])  # get height from config
         
-    def add_tab(self, text:str, command=None):
+    def add_tab(self, text:str='', command=None):
         """
             Append a new tab to the trough. Provide text that will be displayed on the tab and a
             command that will be called when the tab is clicked via the left mouse button.
         """
+        if not text:
+            titles = 'New Project'
+            name = simpledialog.askstring(title=titles, prompt='Project Name:')
+            messagebox.showinfo(
+                title=titles, 
+                message="Enter the project directory. This directory should contain the 'manage.py' file"
+            )
+            dir = filedialog.askdirectory(title=titles, mustexist=True)
+            find_env = messagebox.askquestion(title=titles, message='Add a python environment path.')
         self.tabs.append(Tab(self, text, command))
         
     def on_trough_resize(self, event:tkinter.Event):

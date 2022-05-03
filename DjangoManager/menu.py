@@ -43,6 +43,7 @@ class MenuManager(tkinter.Menu):
         
         debugmenu.add_command(label='Add Tab', command=self.debug_add_tab)
         debugmenu.add_command(label='Add Tab With Text', command=self.debug_add_tab_with_text)
+        debugmenu.add_command(label='Add Real Tab', command=self.debug_add_real_tab)
         
         root.window.config(menu=self)
 
@@ -53,3 +54,6 @@ class MenuManager(tkinter.Menu):
     def debug_add_tab_with_text(self):
         title = simpledialog.askstring('Tab Name', 'Provide a name for this new tab:')
         self.debug_add_tab(title)
+        
+    def debug_add_real_tab(self):
+        self.root.tabs.add_tab()
