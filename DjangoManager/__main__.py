@@ -10,6 +10,7 @@ from utils import ConfigManager
 from menu import MenuManager
 from style import StyleManager
 from controls import ControlFrame
+from msgbox import MessageBox
 from constants import IMAGES_DIR
 
 
