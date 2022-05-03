@@ -35,7 +35,7 @@ class StyleManager(ttk.Style):
         self.theme_create(
             themename=data['name'],
             parent=data['parent'],
-            settings=data['settings']
+            settings=data['ttk_settings']
         )
         
         # self.configure(

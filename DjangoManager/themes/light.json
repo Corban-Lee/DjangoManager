@@ -1,7 +1,10 @@
 {
     "name": "light",
     "parent": "default",
-    "settings": {
+    "tk_settings": {
+
+    },
+    "ttk_settings": {
         "TLabel": {
             "configure": {
                 "background": "#E4E4E4"
