@@ -44,9 +44,10 @@ class Root:
 
         # Get & setup managers
         self.cfg = ConfigManager(self)
-        self.style = StyleManager(self)  # must be called first
+        self.style = StyleManager(self)
         self.tabs = TabManager(self)
         self.menu = MenuManager(self)
+        log.info('Initialized all managers')
         
         self.control_frame = ControlFrame(self)
         self.control_frame.pack(side='bottom', fill='both', expand=True)

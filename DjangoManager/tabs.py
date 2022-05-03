@@ -11,7 +11,10 @@ log = logging.getLogger(__name__)
 
 
 class Tab(ttk.Frame):
-    
+    """
+        Tab widget. 
+        Can be dragged along a trough and moved between other tab widgets.
+    """
     selected: bool = False
 
     def __init__(self, master, text:str, command):
@@ -47,6 +50,8 @@ class Tab(ttk.Frame):
         self.deselect()
         self.pack(side='left', fill='y')
         
+        log.debug('Initialized a new tab')
+        
     def select(self):
         assert not self.selected
         self.selected = True
@@ -75,6 +80,7 @@ class Tab(ttk.Frame):
     def _destroy(self):
         self.destroy()
         self.master.tabs.remove(self)
+        log.debug('Destroyed a tab')
      
     def _snap_to_pos(self, event:tkinter.Event):
         self.pack(side='left', fill='y')
@@ -82,6 +88,7 @@ class Tab(ttk.Frame):
     def drag(self, event:tkinter.Event) -> None:
         """Allows the user to drag the tab"""
         
+        # inform tab manager of selection
         self.master.on_tab_select(self)
         
         # create reserved space for the widget
@@ -106,19 +113,19 @@ class Tab(ttk.Frame):
             # 'x' coordinate, used to determine where to put the widget when dropped
             x: int = int(self.winfo_x() + (self.winfo_width() / 3))
 
+            # determine where to place released tab
             for item in items:
                 
-                # is self overlapping item?
+                # is this tab overlapping another tab?
                 tab_x = item.winfo_x()
                 if x in range(tab_x, tab_x + item.winfo_width()):
-                    break
+                    break  # break the loop to confinue with the current iterated tab
 
                 # widget is offscreen to the left. put it before the first item then 
                 # return nothing to end the func call.
                 if x <= 0 and tab_x == 0:
                     self.pack(side='left', fill='y', before=item)
                     self.reserved_space.pack_forget()
-                    print('placed item at front')
                     return
                 
             # self is not overlapping any items: move it to the end of
@@ -128,7 +135,7 @@ class Tab(ttk.Frame):
                 self.reserved_space.pack_forget()
                 return
                 
-            # now that we have confirmed self is hovering an item we need
+            # now that we have confirmed self is hovering on an item we need
             # to determine if self has moved from left to right or vise versa.
             #
             # 'original_x' is the pos of self before the user clicked & dragged
@@ -144,6 +151,7 @@ class Tab(ttk.Frame):
             else:
                 self.pack(side='left', fill='y', before=item)
 
+            # clear the reserved space
             self.reserved_space.pack_forget()
 
         def move(event:tkinter.Event) -> None:
@@ -166,7 +174,10 @@ class Tab(ttk.Frame):
 
 
 class TabManager(ttk.Frame):
-    
+    """
+        Tab manager for all of the tab widgets. 
+        Also acts as a tab trough widget.
+    """
     tabs: list[Tab] = []
     
     def __init__(self, root):

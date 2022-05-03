@@ -53,6 +53,7 @@ class Project:
 
 
 class ConfigManager:
+    """Manages project settings"""
     data: dict = {}
     _default: dict = {
         'tabs': {

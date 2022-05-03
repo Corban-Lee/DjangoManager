@@ -21,6 +21,8 @@ class StyleManager(ttk.Style):
         for filename in os.listdir(THEME_DIR):
             if filename.endswith('.json'):
                 self._create_theme(filename)
+            else:
+                log.error(f"Unknown file type in themes directory: '{filename}'")
 
     def switch_theme(self, theme_name:str) -> None:
         """Change the current theme"""
@@ -39,6 +41,7 @@ class StyleManager(ttk.Style):
         )
         for widget in get_all_children(self.master):
             break
+        log.info(f"Switched to theme: '{theme_name}'")
             
     def _create_theme(self, filename:str) -> None:
         """
@@ -53,3 +56,4 @@ class StyleManager(ttk.Style):
             parent=data['parent'],
             settings=data['ttk_settings']
         )
+        log.info(f"Created theme: {theme_name}")
