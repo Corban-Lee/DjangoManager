@@ -53,6 +53,8 @@ class Root:
         
         self.paned_window.add(self.tabs, minsize=25)
         self.paned_window.add(self.control_frame, minsize=20)
+        
+        self.style.switch_theme('light')
 
     def run(self) -> None:
         """Start the app"""
