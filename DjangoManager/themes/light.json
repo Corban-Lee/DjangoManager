@@ -1,6 +1,7 @@
 {
+    "name": "light",
     "parent": "default",
-    "ttk": {
+    "settings": {
         "TLabel": {
             "configure": {
                 "background": "#E4E4E4"
@@ -13,7 +14,15 @@
         },
         "TButton": {
             "configure": {
-                "borderwidth": 0
+                "borderwidth": 1,
+                "anchor": "center",
+                "padding": [5, 2, 5, 2]
+            },
+            "map": {
+                "background": [
+                    ["pressed", "#AFAFAF"],
+                    ["active", "#A9A9A9"]
+                ]
             }
         },
         "TEntry": {
@@ -24,7 +33,10 @@
             }
         },
         "BtnBorder.TFrame": {
-            "background": "#A5A4A5"
+            "configure": {
+                "background": "#A5A4A5",
+                "padding": 1
+            }
         },
         "TabSeparator.TFrame": {
             "background": "#A5A4A5"

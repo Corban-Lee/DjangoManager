@@ -33,9 +33,9 @@ class StyleManager(ttk.Style):
         """
         data = get_json(THEME_DIR + '/' + filename)
         self.theme_create(
-            themename=filename.removesuffix('.json'),
+            themename=data['name'],
             parent=data['parent'],
-            settings=data['ttk']
+            settings=data['settings']
         )
         
         # self.configure(
