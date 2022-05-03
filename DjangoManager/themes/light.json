@@ -32,14 +32,16 @@
                 "padding": [5, 2, 5, 2]
             }
         },
-        "BtnBorder.TFrame": {
+        "Border.TFrame": {
             "configure": {
                 "background": "#A5A4A5",
                 "padding": 1
             }
         },
         "TabSeparator.TFrame": {
-            "background": "#A5A4A5"
+            "configure": {
+                "background": "#A5A4A5"
+            }
         },
         "Header.TLabel": {
             "configure": {
@@ -53,9 +55,11 @@
             }
         },
         "Tab.TFrame": {
-            "border": 1,
-            "relief": "flat",
-            "background": "#D9D9D9"
+            "configure": {
+                "border": 1,
+                "relief": "flat",
+                "background": "#D9D9D9"
+            }
         },
         "TabText.TLabel": {
             "configure": {
@@ -81,19 +85,21 @@
             }
         },
         "SelectedTab.TFrame": {
-            "background": "gray70",
-            "relief": "flat"
+            "configure": {
+                "background": "gray70",
+                "relief": "flat"
+            }
         },
         "SelectedTabText.TLabel": {
             "configure": {
-                "bacground": "gray70",
+                "background": "gray70",
                 "padding": [5, 1, 25, 0]
             }
         },
-        "SelectedTabBtn": {
+        "SelectedTabBtn.TLabel": {
             "configure": {
                 "background": "gray70",
-                "padding": [5, 1, 25, 0]
+                "padding": [5, 0, 5, 0]
             },
             "map": {
                 "background": [
