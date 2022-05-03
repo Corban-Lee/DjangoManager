@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import tkinter
+from tkinter import ttk
 from typing import Any
 from dataclasses import dataclass
 
@@ -33,6 +34,16 @@ def write_json(fp:str, data:Any) -> None:
     with open(fp, 'w', encoding='utf-8') as file:
         json.dump(data, file, indent=4)
 
+def clone_widget(widget:ttk.Widget, parent:ttk.Widget|None) -> ttk.Widget:
+    """Returns a clone of the widget. Parent is the same if left as NoneType"""
+    if parent is None:
+        parent = widget.nametowidget(widget.winfo_parent())
+    clone = widget.__class__(parent)
+    for key in widget.configure():
+        if key in ('class',):
+            continue
+        clone.configure({key: widget.cget(key)})
+    return clone
 
 @dataclass
 class Project:
