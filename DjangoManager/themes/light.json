@@ -1,0 +1,94 @@
+{
+    "parent": "default",
+    "ttk": {
+        "TLabel": {
+            "configure": {
+                "background": "#E4E4E4"
+            }
+        },
+        "TFrame": {
+            "configure": {
+                "background": "#E4E4E4"
+            }
+        },
+        "TButton": {
+            "configure": {
+                "borderwidth": 0
+            }
+        },
+        "TEntry": {
+            "configure": {
+                "background": "gray90",
+                "borderwidth": 0,
+                "padding": [5, 2, 5, 2]
+            }
+        },
+        "BtnBorder.TFrame": {
+            "background": "#A5A4A5"
+        },
+        "TabSeparator.TFrame": {
+            "background": "#A5A4A5"
+        },
+        "Header.TLabel": {
+            "configure": {
+                "font": ["TkDefaultFont", 13],
+                "padding": [0, 0, 0, 15]
+            }
+        },
+        "TabTrough.TFrame": {
+            "configure": {
+                "background": "gray95"
+            }
+        },
+        "Tab.TFrame": {
+            "border": 1,
+            "relief": "flat",
+            "background": "#D9D9D9"
+        },
+        "TabText.TLabel": {
+            "configure": {
+                "background": "#D9D9D9",
+                "padding": [5, 1, 25, 0]
+            }
+        },
+        "TabBtn.TLabel": {
+            "configure": {
+                "background": "#D9D9D9",
+                "padding": [5, 0, 5, 0]
+            },
+            "map": {
+                "background": [
+                    ["pressed", "gray75"],
+                    ["active", "gray80"]
+                ]
+            }
+        },
+        "TabReserved.TFrame": {
+            "configure": {
+                "background": "gray45"
+            }
+        },
+        "SelectedTab.TFrame": {
+            "background": "gray70",
+            "relief": "flat"
+        },
+        "SelectedTabText.TLabel": {
+            "configure": {
+                "bacground": "gray70",
+                "padding": [5, 1, 25, 0]
+            }
+        },
+        "SelectedTabBtn": {
+            "configure": {
+                "background": "gray70",
+                "padding": [5, 1, 25, 0]
+            },
+            "map": {
+                "background": [
+                    ["pressed", "gray60"],
+                    ["active", "gray65"]
+                ]
+            }
+        }
+    }
+}
