@@ -2,7 +2,8 @@ import os
 import json
 import logging
 import tkinter
-from tkinter import ttk
+from typing import Any
+from dataclasses import dataclass
 
 from constants import CONFIG_FILENAME
 
@@ -23,6 +24,21 @@ def text_length_check(text:str, length:int):
     if len(text) > length:
         return text[:length - 3] + '...'
     return text
+
+def get_json(fp:str) -> Any:
+    with open(fp, 'r', encoding='utf-8') as file:
+        return json.load(file)
+    
+def write_json(fp:str, data:Any) -> None:
+    with open(fp, 'w', encoding='utf-8') as file:
+        json.dump(data, file, indent=4)
+
+
+@dataclass
+class Project:
+    name: str
+    dir: str
+    env: str
 
 
 class ConfigManager:
@@ -47,8 +63,7 @@ class ConfigManager:
     def read(self) -> None:
         """Read data from the config file and save it as a dictionary: 'self.data'"""
         try:
-            with open(self.dir, 'r', encoding='utf-8') as file:
-                self.data = json.load(file)
+            self.data = get_json(self.dir)
         except FileNotFoundError:
             log.error(f"couldn't find config file in {self.dir}")
             self.restore_defaults()
@@ -58,6 +73,5 @@ class ConfigManager:
         
     def write(self, mode:str='w'):
         """Writes the current config to the config file'"""
-        with open(self.dir, mode, encoding='utf-8') as file:
-            json.dump(self.data, file)
+        write_json(self.dir, self.data)
         
