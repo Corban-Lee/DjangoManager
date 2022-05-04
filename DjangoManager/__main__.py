@@ -1,5 +1,6 @@
 import tkinter
 import logging
+from time import sleep
 from pathlib import Path
 from appdirs import AppDirs
 from PIL import Image, ImageTk
@@ -34,6 +35,7 @@ class Root:
         self.window.protocol('WM_DELETE_WINDOW', self.on_exit)
         self.window.minsize(700, 400)
         self.window.title(self.name)
+        self.window.configure(bg='gray20')
         self.window.iconphoto(False, ImageTk.PhotoImage(Image.open(IMAGES_DIR+'/icon.png')))
         self._setup_titlebar()
         
@@ -42,7 +44,7 @@ class Root:
             self.window, orient='vertical', sashwidth=1, bd=0,
             background='#a3a2a2'
         )
-        self.paned_window.pack(side='top', fill='both', expand=True)
+        self.paned_window.pack(side='top', fill='both', expand=True, padx=1, pady=(0, 1))
 
         # Get & setup managers
         self.cfg = ConfigManager(self)
@@ -67,6 +69,7 @@ class Root:
     def on_exit(self) -> SystemExit:
         """Properly exits the app"""
         log.info('exiting app')
+        sleep(.2)  # delay makes the close feel realistic
         self.window.destroy()
         raise SystemExit
     
