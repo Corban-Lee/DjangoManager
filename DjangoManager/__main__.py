@@ -6,7 +6,7 @@ from PIL import Image, ImageTk
 
 import logs
 from tabs import TabManager
-from utils import ConfigManager
+from utils import ConfigManager, Titlebar
 from menu import MenuManager
 from style import StyleManager
 from controls import ControlFrame
@@ -35,7 +35,9 @@ class Root:
         self.window.minsize(700, 400)
         self.window.title(self.name)
         self.window.iconphoto(False, ImageTk.PhotoImage(Image.open(IMAGES_DIR+'/icon.png')))
+        self._setup_titlebar()
         
+        # this paned window exists to allow the tab trough to be expanded vertically
         self.paned_window = tkinter.PanedWindow(
             self.window, orient='vertical', sashwidth=1, bd=0,
             background='#a3a2a2'
@@ -46,7 +48,7 @@ class Root:
         self.cfg = ConfigManager(self)
         self.style = StyleManager(self)
         self.tabs = TabManager(self)
-        self.menu = MenuManager(self)
+        # self.menu = MenuManager(self)
         log.info('Initialized all managers')
         
         self.control_frame = ControlFrame(self)
@@ -74,6 +76,12 @@ class Root:
         Path(self.dirs.user_cache_dir).mkdir(parents=True, exist_ok=True)
         Path(self.dirs.user_config_dir).mkdir(parents=True, exist_ok=True)
         Path(self.dirs.user_log_dir).mkdir(parents=True, exist_ok=True)
+        
+    def _setup_titlebar(self) -> None:
+        """Create and configure the custom titlebar"""
+        self.window.overrideredirect(True)
+        self.titlebar = Titlebar(self)
+        
 
 
 if __name__ == '__main__':

@@ -35,6 +35,35 @@
                 "padding": [5, 2, 5, 2]
             }
         },
+        "WindowClose.TLabel": {
+            "configure": {
+                "background": "#E4E4E4",
+                "padding": [13, 0, 13, 0]
+            },
+            "map": {
+                "background": [
+                    ["pressed", "red"],
+                    ["active", "red"]
+                ]
+            }
+        },
+        "WindowBtn.TLabel": {
+            "configure": {
+                "background": "#E4E4E4",
+                "padding": [13, 0, 13, 0]
+            },
+            "map": {
+                "background": [
+                    ["pressed", "#D4D4D4"],
+                    ["active", "#D4D4D4"]
+                ]
+            }
+        },
+        "WindowTitle.TLabel": {
+            "configure": {
+                "font": ["TkDefaultFont", 11]
+            }
+        },
         "Border.TFrame": {
             "configure": {
                 "background": "#A5A4A5",
