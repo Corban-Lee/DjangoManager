@@ -35,9 +35,15 @@
                 "padding": [5, 2, 5, 2]
             }
         },
+        "WindowTB.TFrame": {
+            "configure": {
+                "background": "gray20"
+            }
+        },
         "WindowClose.TLabel": {
             "configure": {
-                "background": "#E4E4E4",
+                "foreground": "gray95",
+                "background": "gray20",
                 "padding": [13, 0, 13, 0]
             },
             "map": {
@@ -49,19 +55,22 @@
         },
         "WindowBtn.TLabel": {
             "configure": {
-                "background": "#E4E4E4",
+                "background": "gray20",
                 "padding": [13, 0, 13, 0]
             },
             "map": {
                 "background": [
-                    ["pressed", "#D4D4D4"],
-                    ["active", "#D4D4D4"]
+                    ["pressed", "gray30"],
+                    ["active", "gray30"]
                 ]
             }
         },
         "WindowTitle.TLabel": {
             "configure": {
-                "font": ["TkDefaultFont", 11]
+                "font": ["Segoe UI", 10],
+                "foreground": "gray95",
+                "background": "gray20",
+                "padding": [0, 0, 0, 1]
             }
         },
         "Border.TFrame": {

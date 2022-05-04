@@ -117,24 +117,24 @@ class ConfigManager:
         
 class Titlebar(ttk.Frame):
     def __init__(self, root):
-        super().__init__(root.window, height=30)
+        super().__init__(root.window, height=30, style='WindowTB.TFrame')
         self.pack_propagate(False)
-        self.pack(side='top', fill='x')
+        self.pack(side='top', fill='x', padx=1, pady=(1, 0))
         self.bind('<Button-1>', self.on_click)
         self.window = root.window
-        self.root = root
+        self.root = root 
         
         title = ttk.Label(self, text=root.window.title(), style='WindowTitle.TLabel')
         title.place(relx=.5, rely=.5, anchor='center')
         title.bind('<Button-1>', self.on_click)
         
+        btn_colour = 'light'
         
         self.close_btn = ttk.Button(self, style='WindowClose.TLabel')
         self.close_btn.pack(side='right', fill='y')
         set_widget_image(
             self.close_btn, width=15, height=15, 
-            default_img_fn='close_dark.png',
-            active_img_fn='close_light.png' 
+            default_img_fn=f'close_{btn_colour}.png',
             )
         label_to_button(self.close_btn, command=self.on_close)
         
@@ -142,7 +142,7 @@ class Titlebar(ttk.Frame):
         self.maximize_btn.pack(side='right', fill='y')
         set_widget_image(
             self.maximize_btn, width=15, height=15, 
-            default_img_fn='maximize_dark.png',
+            default_img_fn=f'maximize_{btn_colour}.png',
             )
         label_to_button(self.maximize_btn, command=print)
         
@@ -150,15 +150,22 @@ class Titlebar(ttk.Frame):
         self.minimize_btn.pack(side='right', fill='y')
         set_widget_image(
             self.minimize_btn, width=15, height=15, 
-            default_img_fn='minimize_dark.png',
+            default_img_fn=f'minimize_{btn_colour}.png',
             )
         label_to_button(self.minimize_btn, command=print)
         
+        self.menu_btn = ttk.Button(self, style='WindowBtn.TLabel')
+        self.menu_btn.pack(side='left', fill='y')
+        set_widget_image(
+            self.menu_btn, width=15, height=15,
+            default_img_fn=f'menu_{btn_colour}.png'
+        )
+        
         self.pin_btn = ttk.Button(self, style='WindowBtn.TLabel')
-        self.pin_btn.pack(side='right', fill='y')
+        self.pin_btn.pack(side='left', fill='y')
         set_widget_image(
             self.pin_btn, width=15, height=15, 
-            default_img_fn='pin_dark.png',
+            default_img_fn=f'pin_{btn_colour}.png',
             )
         label_to_button(self.pin_btn, command=self.on_pin)
                 
@@ -180,5 +187,7 @@ class Titlebar(ttk.Frame):
             self.window.geometry(f'+{event.x_root + window_x}+{event.y_root + window_y}')
         
         event.widget.bind('<B1-Motion>', move_window)
+        event.widget.bind('<ButtonRelease-1>', lambda e: event.widget.config(cursor='arrow'))
+        event.widget.configure(cursor='fleur')
         
         
