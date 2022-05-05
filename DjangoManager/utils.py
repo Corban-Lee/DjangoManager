@@ -1,17 +1,14 @@
-import os
 import json
 import logging
 import tkinter
 from tkinter import ttk
 from typing import Any
 from PIL import Image, ImageTk
-from dataclasses import dataclass
 
-from constants import CONFIG_FILENAME, IMAGES_DIR
+from constants import IMAGES_DIR, ButtonState
 
 
 log = logging.getLogger(__name__)
-
 
 def get_all_children(widget:tkinter.Widget|tkinter.Tk) -> list[tkinter.Widget]:
     """Returns a list of every widget below the entered widget"""
@@ -19,7 +16,6 @@ def get_all_children(widget:tkinter.Widget|tkinter.Tk) -> list[tkinter.Widget]:
     for child in children:
         children.extend(child.winfo_children())
     return children
-
 
 def text_length_check(text:str, length:int):
     """Replaces long strings with a shortened copy ending in '...'"""
@@ -46,15 +42,44 @@ def clone_widget(widget:ttk.Widget, parent:ttk.Widget|None) -> ttk.Widget:
         clone.configure({key: widget.cget(key)})
     return clone
 
-def label_to_button(widget:ttk.Label, command:Any) -> None:
-    """Gives labels button-like properties"""
-    def clicked():
-        widget.bind('<ButtonRelease-1>', lambda e: command())
-        widget.bind('<Leave>', lambda e: leave(), add=True)
-    def leave():
-        widget.unbind('<ButtonRelease-1>')
-        widget.bind('<Enter>', lambda e: clicked(), add=True)
-    widget.bind('<Button-1>', lambda e: clicked())
+# def label_to_button(widget:ttk.Label, command:Any) -> None:
+#     """Gives labels button-like properties"""
+#     def clicked():
+#         widget.bind('<ButtonRelease-1>', lambda e: command())
+#         widget.bind('<Leave>', lambda e: leave(), add=True)
+#     def leave():
+#         widget.unbind('<ButtonRelease-1>')
+#         widget.bind('<Enter>', lambda e: clicked(), add=True)
+#     widget.bind('<Button-1>', lambda e: clicked())
+
+def make_button(widget:ttk.Label, command=None) -> ttk.Label:
+    """
+        Gives labels button-like properties. Use this instead of
+        tkinter.Button / ttk.Button to avoid the foreground text or
+        image moving vertically when clicked.
+    """
+    def on_click(widget:ttk.Label, event:tkinter.Event):
+        # only let the click go through if the mouse is still
+        # inside the button and the command is callable.
+        if (
+            widget.btn_state.get() == str(ButtonState.HOVER) 
+            and callable(widget.command)
+            ):
+            widget.command(event)
+    # make the command an attribute for easy access
+    widget.command = command
+    # the button uses the ButtonState enum to determine when to
+    # allow the clicks to register.
+    widget.btn_state = tkinter.StringVar(value=ButtonState.REST)
+    widget.bind(
+        sequence='<Enter>', add=True,
+        func=lambda e: widget.btn_state.set(ButtonState.HOVER)
+    )
+    widget.bind(
+        sequence='<Leave>', add=True, 
+        func=lambda e: widget.btn_state.set(ButtonState.REST)
+    )
+    widget.bind('<ButtonRelease-1>', lambda e: on_click(widget, e))
     
 def set_widget_image(
         widget:ttk.Widget, width:int, height:int, 
@@ -71,123 +96,3 @@ def set_widget_image(
         widget.bind('<Enter>', lambda e: widget.configure(image=active_image))
         widget.bind('<Leave>', lambda e: widget.configure(image=default_image))
     widget.configure(image=default_image)
-
-@dataclass
-class Project:
-    name: str
-    dir: str
-    env: str
-
-
-class ConfigManager:
-    """Manages project settings"""
-    data: dict = {}
-    _default: dict = {
-        'tabs': {
-            'trough_height': 25
-        }
-    }
-    
-    def __init__(self, root):
-        self.dir = root.dirs.user_config_dir + '/' + CONFIG_FILENAME
-        self.read()
-        
-    def restore_defaults(self) -> None:
-        """Restore default values to config file"""
-        log.info('restoring defaults to log file')
-        self.data = self._default
-        filemode = 'w' if os.path.exists(self.dir) else 'x'
-        self.write(filemode)
-    
-    def read(self) -> None:
-        """Read data from the config file and save it as a dictionary: 'self.data'"""
-        try:
-            self.data = get_json(self.dir)
-        except FileNotFoundError:
-            log.error(f"couldn't find config file in {self.dir}")
-            self.restore_defaults()
-        except json.JSONDecodeError:
-            log.error(f"config file in {self.dir} couldn't be read")
-            self.restore_defaults()                                             
-        
-    def write(self, mode:str='w'):
-        """Writes the current config to the config file'"""
-        write_json(self.dir, self.data)
-        
-        
-class Titlebar(ttk.Frame):
-    def __init__(self, root):
-        super().__init__(root.window, height=30, style='WindowTB.TFrame')
-        self.pack_propagate(False)
-        self.pack(side='top', fill='x', padx=1, pady=(1, 0))
-        self.bind('<Button-1>', self.on_click)
-        self.window = root.window
-        self.root = root 
-        
-        title = ttk.Label(self, text=root.window.title(), style='WindowTitle.TLabel')
-        title.place(relx=.5, rely=.5, anchor='center')
-        title.bind('<Button-1>', self.on_click)
-        
-        btn_colour = 'light'
-        
-        self.close_btn = ttk.Button(self, style='WindowClose.TLabel')
-        self.close_btn.pack(side='right', fill='y')
-        set_widget_image(
-            self.close_btn, width=15, height=15, 
-            default_img_fn=f'close_{btn_colour}.png',
-            )
-        label_to_button(self.close_btn, command=self.on_close)
-        
-        self.maximize_btn = ttk.Button(self, style='WindowBtn.TLabel')
-        self.maximize_btn.pack(side='right', fill='y')
-        set_widget_image(
-            self.maximize_btn, width=15, height=15, 
-            default_img_fn=f'maximize_{btn_colour}.png',
-            )
-        label_to_button(self.maximize_btn, command=print)
-        
-        self.minimize_btn = ttk.Button(self, style='WindowBtn.TLabel')
-        self.minimize_btn.pack(side='right', fill='y')
-        set_widget_image(
-            self.minimize_btn, width=15, height=15, 
-            default_img_fn=f'minimize_{btn_colour}.png',
-            )
-        label_to_button(self.minimize_btn, command=print)
-        
-        self.menu_btn = ttk.Button(self, style='WindowBtn.TLabel')
-        self.menu_btn.pack(side='left', fill='y')
-        set_widget_image(
-            self.menu_btn, width=15, height=15,
-            default_img_fn=f'menu_{btn_colour}.png'
-        )
-        
-        self.pin_btn = ttk.Button(self, style='WindowBtn.TLabel')
-        self.pin_btn.pack(side='left', fill='y')
-        set_widget_image(
-            self.pin_btn, width=15, height=15, 
-            default_img_fn=f'pin_{btn_colour}.png',
-            )
-        label_to_button(self.pin_btn, command=self.on_pin)
-                
-        log.info('Created custom titlebar')
-        
-    def on_close(self) -> None:
-        self.root.on_exit()
-        
-    def on_pin(self) -> None:
-        self.window.attributes('-topmost', not self.window.attributes('-topmost'))
-        
-    def on_click(self, event:tkinter.Event) -> None:
-        start_x = event.x_root
-        start_y = event.y_root
-        window_x = self.window.winfo_x() - start_x
-        window_y = self.window.winfo_y() - start_y
-        
-        def move_window(event:tkinter.Event):
-            self.window.geometry(f'+{event.x_root + window_x}+{event.y_root + window_y}')
-        
-        event.widget.bind('<B1-Motion>', move_window)
-        event.widget.bind('<ButtonRelease-1>', lambda e: event.widget.config(cursor='arrow'))
-        event.widget.configure(cursor='fleur')
-        
-        
