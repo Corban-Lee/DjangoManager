@@ -9,8 +9,8 @@ log = logging.getLogger(__name__)
 
 
 class ControlFrame(ttk.Frame):
-    def __init__(self, root):
-        super().__init__(root.paned_window, style='Control.TFrame')
+    def __init__(self, root, master):
+        super().__init__(master, style='Control.TFrame')
         
         paned_window = tkinter.PanedWindow(self, orient='horizontal', background='#a3a2a2', sashwidth=1, bd=0)
         paned_window.pack(fill='both', expand=True)
@@ -32,13 +32,13 @@ class ControlFrame(ttk.Frame):
         ttk.Label(project_pane, text='Project Title'
         ).grid(column=0, row=1, sticky='w', padx=15, pady=(0, 3))
         ttk.Entry(project_pane, textvariable=self.project_header
-        ).grid(column=0, row=2, sticky='we', padx=15, pady=(0, 15))
+        ).grid(column=0, row=2, sticky='we', padx=15, pady=(0, 10))
        
         # project path
         ttk.Label(project_pane, text='Project Location'
         ).grid(column=0, row=3, sticky='w', padx=15, pady=(0, 3))
         ttk.Entry(project_pane, textvariable=self.project_path,
-        ).grid(column=0, row=4, sticky='we', padx=15, pady=(0, 15))
+        ).grid(column=0, row=4, sticky='we', padx=15, pady=(0, 10))
         
         # environment path
         ttk.Label(project_pane, text='Environment Location',
@@ -77,3 +77,4 @@ class ControlFrame(ttk.Frame):
         
         console = tkinter.Text(console_pane, width=1, height=1, bd=0)
         console.pack(fill='both', expand=True)
+        console.insert('insert', 'console output here:')
