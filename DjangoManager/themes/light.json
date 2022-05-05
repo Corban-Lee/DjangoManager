@@ -35,12 +35,40 @@
                 "padding": [5, 2, 5, 2]
             }
         },
-        "WindowTB.TFrame": {
+        "Menu.TFrame": {
             "configure": {
                 "background": "gray20"
             }
         },
-        "WindowClose.TLabel": {
+        "MenuHeader.TLabel": {
+            "configure": {
+                "foreground": "gray100",
+                "background": "gray20",
+                "font": ["TkDefaultFont", 11],
+                "anchor": "w",
+                "padding": [10, 0, 10, 0]
+            }
+        },
+        "MenuBtn.TLabel": {
+            "configure": {
+                "foreground": "gray90",
+                "background": "gray20",
+                "anchor": "w",
+                "padding": [10, 0, 10, 0]
+            },
+            "map": {
+                "background": [
+                    ["pressed", "gray40"],
+                    ["active", "gray30"]
+                ]
+            }
+        },
+        "WinTB.TFrame": {
+            "configure": {
+                "background": "gray20"
+            }
+        },
+        "WinClose.TLabel": {
             "configure": {
                 "foreground": "gray95",
                 "background": "gray20",
@@ -53,7 +81,7 @@
                 ]
             }
         },
-        "WindowBtn.TLabel": {
+        "WinBtn.TLabel": {
             "configure": {
                 "background": "gray20",
                 "padding": [13, 0, 13, 0]
@@ -65,7 +93,19 @@
                 ]
             }
         },
-        "WindowTitle.TLabel": {
+        "WinBtnOn.TLabel": {
+            "configure": {
+                "background": "gray30",
+                "padding": [13, 0, 13, 0]
+            },
+            "map": {
+                "background": [
+                    ["pressed", "gray40"],
+                    ["active", "gray40"]
+                ]
+            }
+        },
+        "WinTitle.TLabel": {
             "configure": {
                 "font": ["Segoe UI", 10],
                 "foreground": "gray95",
