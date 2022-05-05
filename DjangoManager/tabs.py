@@ -3,7 +3,7 @@ import tkinter
 from tkinter import ttk, simpledialog, messagebox, filedialog
 from PIL import Image, ImageTk
 
-from utils import text_length_check, Project
+from utils import text_length_check
 from constants import IMAGES_DIR
 
 
