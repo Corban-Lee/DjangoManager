@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 class DropMenu(ttk.Frame):
     def __init__(self, root):
         super().__init__(
-            root.window, width=150, height=140, 
+            root.window, width=150, height=180, 
             style='Menu.TFrame'
         )
         self.root = root
@@ -42,29 +42,37 @@ class DropMenu(ttk.Frame):
         
         ttk.Label(
             self, text='Project Menu', style='MenuHeader.TLabel'
-        ).grid(column=0, row=0, sticky='we', padx=5, pady=(7,5))
+        ).grid(column=0, row=0, sticky='we', padx=5, pady=(7, 0))
+        ttk.Frame(self, style='Border.TFrame'
+        ).grid(column=0, row=1, sticky='we', padx=10, pady=(3, 5))
         
         # project menu options
         ttk.Button(  # create a new project (unfunctional)
             self, text='Create New', style='MenuBtn.TLabel'
-        ).grid(column=0, row=1, sticky='we', padx=5)
+        ).grid(column=0, row=2, sticky='we', padx=5)
         ttk.Button(  # add existing project from file (unfunctional)
             self, text='Add Existing', style='MenuBtn.TLabel'
-        ).grid(column=0, row=2, sticky='we', padx=5)
+        ).grid(column=0, row=3, sticky='we', padx=5)
+        ttk.Button(  # close currently selected project tab (unfunctional)
+            self, text='Close Project Tab', style='MenuBtn.TLabel'
+        ).grid(column=0, row=4, sticky='we', padx=5)
+        ttk.Button(  # delete currently selected project (unfunctional)
+            self, text='Remove Project', style='MenuBtn.TLabel'
+        ).grid(column=0, row=5, sticky='we', padx=5)
         
         # debug menu options
         ttk.Button(  # add a new empty tab
             self, text='Add Tab', style='MenuBtn.TLabel', 
             command=lambda: self.on_btn(self.on_add_tab)
-        ).grid(column=0, row=4, sticky='we', padx=5)
+        ).grid(column=0, row=6, sticky='we', padx=5)
         ttk.Button(  # add a new tab with custom text
             self, text='Add Tab With Text', style='MenuBtn.TLabel',
             command=lambda: self.on_btn(self.on_add_text_tab)
-        ).grid(column=0, row=5, sticky='we', padx=5)
+        ).grid(column=0, row=7, sticky='we', padx=5)
         ttk.Button(  # add a tab tied to a project (unfunctional)
             self, text='Add Real Tab', style='MenuBtn.TLabel',
             command=lambda: self.on_btn(self.on_add_real_tab)
-        ).grid(column=0, row=6, sticky='we', padx=(5, 7))
+        ).grid(column=0, row=8, sticky='we', padx=(5, 7))
         
     def on_btn(self, command) -> None:
         self.root.titlebar.on_menu()
@@ -83,7 +91,7 @@ class DropMenu(ttk.Frame):
 
 
 class Titlebar(ttk.Frame):
-    _last_min_valid = None
+    _last_min_valid = True
     
     def __init__(self, root):
         super().__init__(root.win_border, height=30, style='WinTB.TFrame')
@@ -160,7 +168,7 @@ class Titlebar(ttk.Frame):
         self.window.overrideredirect(True)
         if self._last_min_valid:
             self.root._set_appwindow()
-            self._last_min_valid = None
+            self._last_min_valid = False
         
         
     def on_close(self, event:tkinter.Event) -> None:
@@ -203,8 +211,12 @@ class Titlebar(ttk.Frame):
         self.pin_btn.config(style=style)
         
     def on_click(self, event:tkinter.Event) -> None:
+        """Prepares the titlebar to drag the root window"""
         start_x = event.x_root
         start_y = event.y_root
+        # this check is necessary to avoid the window being dragged
+        # from a cursor on the opposite side of the screen after starting
+        # the drag from a maximized state.
         if self.window.state() == 'zoomed':
             self.on_restore()
             window_x = 0
@@ -213,6 +225,7 @@ class Titlebar(ttk.Frame):
             window_x = self.window.winfo_x() - start_x
             window_y = self.window.winfo_y() - start_y        
         def move_window(event:tkinter.Event):
+            """Updates the coordinates of the root window"""
             self.window.geometry(f'+{event.x_root + window_x}+{event.y_root + window_y}')
         
         event.widget.bind('<B1-Motion>', move_window)
@@ -221,20 +234,21 @@ class Titlebar(ttk.Frame):
 
 
 class Root:
-    name = 'Django Manager'
-    safe_name = 'DjangoManager'
+    """Root of the entire application"""
+    title = 'Django Manager'
+    dir_name = 'DjangoManager'
     window = tkinter.Tk()
-    dirs = AppDirs(safe_name, version=__version__)
+    dirs = AppDirs(dir_name, version=__version__)
 
     def __init__(self):
         self._validate_dirs()
-        logs.setup(self.name, __version__, self.dirs)
+        logs.setup(self.title, __version__, self.dirs)
         
         # setup window
         self.window.protocol('WM_DELETE_WINDOW', self.on_exit)
+        self.window.geometry('700x400+150+150')
         self.window.minsize(700, 400)
-        self.window.title(self.name)
-        self.window.iconphoto(False, ImageTk.PhotoImage(Image.open(IMAGES_DIR+'/icon.png')))
+        self.window.title(self.title)
         self.win_border = tkinter.Frame(self.window, bg='gray20')
         self.win_border.pack(fill='both', expand=True)
         self._setup_titlebar()
@@ -286,6 +300,7 @@ class Root:
         self.titlebar = Titlebar(self)
         
     def _set_appwindow(self):
+        # allows windows to show this app on the taskbar
         hwnd = windll.user32.GetParent(self.window.winfo_id())
         stylew = windll.user32.GetWindowLongW(hwnd, GWL_EXSTYLE)
         stylew = stylew & ~WS_EX_TOOLWINDOW
