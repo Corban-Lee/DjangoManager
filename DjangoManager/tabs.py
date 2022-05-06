@@ -27,7 +27,7 @@ class Tab(ttk.Frame):
         self.text.grid(column=0, row=1, sticky='nsew')
         self.text.bind('<Button-1>', self.drag)
 
-        # get 'x' images for close button
+        # get light and dark 'x' images for close button
         self.close_imgs = {}
         for color in ('light', 'dark'):
             img = Image.open(f'{IMAGES_DIR}/close_{color}.png')
@@ -41,11 +41,15 @@ class Tab(ttk.Frame):
         vert_sep = ttk.Frame(self, style='TabSeparator.TFrame', width=1)
         vert_sep.grid(column=2, row=1, sticky='ns')
         
-        horz_sep = ttk.Frame(self, style='TabSeparator.TFrame', height=1)
-        horz_sep.grid(column=0, columnspan=3, row=0, sticky='we')
+        # looks cleaner without this.
+        # horz_sep = ttk.Frame(self, style='TabSeparator.TFrame', height=1)
+        # horz_sep.grid(column=0, columnspan=3, row=0, sticky='we')
 
         # reserves a space when moving the tab
         self.reserved_space = ttk.Frame(self.master)
+        self.reserved_space.pack_propagate(False)
+        reserved_vert_sep = ttk.Frame(self.reserved_space, style='TabSeparator.TFrame', width=1)
+        reserved_vert_sep.pack(side='right', fill='y')
         
         self.deselect()
         self.pack(side='left', fill='y')
