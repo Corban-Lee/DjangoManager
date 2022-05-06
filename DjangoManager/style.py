@@ -1,6 +1,6 @@
 import os
 import logging
-from tkinter import ttk
+from tkinter import ttk, font
 
 from utils import get_json, get_all_children
 from constants import THEME_DIR
@@ -15,6 +15,7 @@ class StyleManager(ttk.Style):
     
     def __init__(self, root):
         super().__init__(root.window)
+        self.default_font = font.nametofont('TkDefaultFont')
         self._load_themes()
                 
     def _load_themes(self) -> None:
@@ -39,8 +40,9 @@ class StyleManager(ttk.Style):
                 ]})
             ]
         )
-        for widget in get_all_children(self.master):
-            break
+        # TODO: apply tk settings here
+        # for widget in get_all_children(self.master):
+        #     break 
         log.info(f"Switched to theme: '{theme_name}'")
             
     def _create_theme(self, filename:str) -> None:
@@ -50,7 +52,9 @@ class StyleManager(ttk.Style):
         """
         data = get_json(THEME_DIR + '/' + filename)
         theme_name = data['name']  # retrieve data here to avoid doing a lookup twice
+        fnt_fam, fnt_size = data['default_font']
         self.tk_settings[theme_name] = data['tk_settings']
+        self.default_font.configure(family=fnt_fam, size=fnt_size)
         self.theme_create(
             themename=theme_name,
             parent=data['parent'],
