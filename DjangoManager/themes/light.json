@@ -1,18 +1,19 @@
 {
     "name": "light",
     "parent": "default",
+    "default_font": ["Segoe UI", 9],
     "tk_settings": {
 
     },
     "ttk_settings": {
         "TLabel": {
             "configure": {
-                "background": "#E4E4E4"
+                "background": "gray95"
             }
         },
         "TFrame": {
             "configure": {
-                "background": "#E4E4E4"
+                "background": "gray95"
             }
         },
         "TButton": {
@@ -32,7 +33,9 @@
             "configure": {
                 "background": "gray90",
                 "borderwidth": 0,
-                "padding": [5, 2, 5, 2]
+                "padding": [5, 2, 5, 2],
+                "selectforeground": "gray10",
+                "selectbackground": "cornflower blue"
             }
         },
         "Menu.TFrame": {
@@ -44,7 +47,7 @@
             "configure": {
                 "foreground": "gray100",
                 "background": "gray20",
-                "font": ["TkDefaultFont", 11],
+                "font": ["TkDefaultFont", 10],
                 "anchor": "w",
                 "padding": [10, 0, 10, 0]
             }
@@ -126,37 +129,38 @@
         },
         "Header.TLabel": {
             "configure": {
+                "background": "gray95",
                 "font": ["TkDefaultFont", 13],
                 "padding": [0, 0, 0, 15]
             }
         },
         "TabTrough.TFrame": {
             "configure": {
-                "background": "gray95"
+                "background": "snow"
             }
         },
         "Tab.TFrame": {
             "configure": {
                 "border": 1,
                 "relief": "flat",
-                "background": "#D9D9D9"
+                "background": "gray85"
             }
         },
         "TabText.TLabel": {
             "configure": {
-                "background": "#D9D9D9",
+                "background": "gray85",
                 "padding": [5, 1, 25, 0]
             }
         },
         "TabBtn.TLabel": {
             "configure": {
-                "background": "#D9D9D9",
+                "background": "gray85",
                 "padding": [5, 0, 5, 0]
             },
             "map": {
                 "background": [
-                    ["pressed", "gray75"],
-                    ["active", "gray80"]
+                    ["pressed", "gray70"],
+                    ["active", "gray75"]
                 ]
             }
         },
@@ -167,25 +171,25 @@
         },
         "SelectedTab.TFrame": {
             "configure": {
-                "background": "gray70",
+                "background": "gray100",
                 "relief": "flat"
             }
         },
         "SelectedTabText.TLabel": {
             "configure": {
-                "background": "gray70",
+                "background": "gray100",
                 "padding": [5, 1, 25, 0]
             }
         },
         "SelectedTabBtn.TLabel": {
             "configure": {
-                "background": "gray70",
+                "background": "gray100",
                 "padding": [5, 0, 5, 0]
             },
             "map": {
                 "background": [
-                    ["pressed", "gray60"],
-                    ["active", "gray65"]
+                    ["pressed", "gray85"],
+                    ["active", "gray90"]
                 ]
             }
         }
