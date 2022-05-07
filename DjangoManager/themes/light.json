@@ -18,14 +18,16 @@
         },
         "TButton": {
             "configure": {
+                "foreground": "black",
+                "background": "gray70",
                 "borderwidth": 1,
                 "anchor": "center",
-                "padding": [5, 2, 5, 2]
+                "padding": [10, 2, 10, 2]
             },
             "map": {
                 "background": [
-                    ["pressed", "#AFAFAF"],
-                    ["active", "#A9A9A9"]
+                    ["pressed", "gray60"],
+                    ["active", "gray65"]
                 ]
             }
         },
@@ -36,6 +38,11 @@
                 "padding": [5, 2, 5, 2],
                 "selectforeground": "gray10",
                 "selectbackground": "cornflower blue"
+            }
+        },
+        "Controls.TFrame": {
+            "configure": {
+                "background": "snow"
             }
         },
         "Menu.TFrame": {
