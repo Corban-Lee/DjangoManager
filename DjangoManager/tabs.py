@@ -1,6 +1,6 @@
 import logging
 import tkinter
-from tkinter import ttk, simpledialog, messagebox, filedialog
+from tkinter import ttk
 from PIL import Image, ImageTk
 
 from utils import text_length_check
@@ -10,6 +10,14 @@ from constants import IMAGES_DIR
 log = logging.getLogger(__name__)
 
 
+class Project:
+    def __init__(self, root, name:str, path:str, env_path:str):
+        self.root = root
+        self.name = name
+        self.path = path
+        self.env_path = env_path
+
+
 class Tab(ttk.Frame):
     """
         Tab widget. 
@@ -17,13 +25,14 @@ class Tab(ttk.Frame):
     """
     selected: bool = False
 
-    def __init__(self, master, text:str, command):
+    def __init__(self, master, project):
         super().__init__(master, style=f'Tab.TFrame')
+        self.project = project
         self.bind('<Button-1>', self.drag)
         self.rowconfigure(index=1, weight=1)
         
         # text displayed on the tab
-        self.text = ttk.Label(self, text=text_length_check(text, 20))
+        self.text = ttk.Label(self, text=text_length_check(project.name, 20))
         self.text.grid(column=1, row=1, sticky='nsew')
         self.text.bind('<Button-1>', self.drag)
 
@@ -80,8 +89,8 @@ class Tab(ttk.Frame):
         self.close_btn.config(image=img)
             
     def _destroy(self):
-        self.destroy()
         self.master.tabs.remove(self)
+        self.master.on_tab_destroy(self)
         log.debug('Destroyed a tab')
      
     def _snap_to_pos(self, event:tkinter.Event):
@@ -186,6 +195,7 @@ class TabManager(ttk.Frame):
         Also acts as a tab trough widget.
     """
     tabs: list[Tab] = []
+    selected_tab: Tab = None
     
     def __init__(self, root):
         super().__init__(root.window, style='TabTrough.TFrame')
@@ -200,21 +210,9 @@ class TabManager(ttk.Frame):
         self.bind('<Configure>', self.on_trough_resize)
         self.config(height=root.cfg.data['tabs']['trough_height'])  # get height from config
         
-    def add_tab(self, text:str='', command=None):
-        """
-            Append a new tab to the trough. Provide text that will be displayed on the tab and a
-            command that will be called when the tab is clicked via the left mouse button.
-        """
-        if not text:
-            titles = 'New Project'
-            name = simpledialog.askstring(title=titles, prompt='Project Name:')
-            messagebox.showinfo(
-                title=titles, 
-                message="Enter the project directory. This directory should contain the 'manage.py' file"
-            )
-            dir = filedialog.askdirectory(title=titles, mustexist=True)
-            find_env = messagebox.askquestion(title=titles, message='Add a python environment path.')
-        self.tabs.append(Tab(self, text, command))
+    def add_tab(self, project):
+        """Append a new tab to the trough."""
+        self.tabs.append(Tab(self, project))
         
     def on_trough_resize(self, event:tkinter.Event):
         """Writes the current height of the trough to the config file"""
@@ -226,9 +224,47 @@ class TabManager(ttk.Frame):
         for tab in self.tabs:
             if tab.selected:
                 tab.deselect()
-
-                # break because their should only be one tab active so
-                # there is no need to re-iterate.
                 break  
             
         clicked_tab.select()
+        self.selected_tab = clicked_tab
+        self.root.project_frame.load(clicked_tab.project)
+        self.root.cfg.data['tabs']['last_tab'] = clicked_tab.project.name
+        self.root.cfg.write()
+
+
+    def on_tab_destroy(self, tab:Tab):
+        """Process destroyed tabs"""
+        
+        # try to select another tab if any exist
+        if self.tabs:
+            unload = tab.project
+            if tab.selected:
+                new_tab = self.tabs[-1]
+        else:
+            unload = 'all'
+            
+        tab.destroy()
+        self.root.project_frame.unload(unload)
+        try:
+            self.on_tab_select(new_tab)
+        except UnboundLocalError:
+            pass
+        
+    def auto_load_tabs(self) -> None:
+        data = self.root.cfg.data
+        for project_name, project in data['projects'].items():
+            project = Project(
+                self.root, 
+                project_name, 
+                project['path'],
+                project['env_path']
+            )
+            self.add_tab(project)
+            
+        last_tab = data['tabs']['last_tab']
+        if last_tab:
+            for tab in self.tabs:
+                if tab.project.name == last_tab:
+                    self.on_tab_select(tab)
+                    break

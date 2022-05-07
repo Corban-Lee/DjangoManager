@@ -1,16 +1,16 @@
 import logging
 import tkinter
-from tkinter import ttk, simpledialog
+from tkinter import ttk, simpledialog, filedialog
 from pathlib import Path
 from appdirs import AppDirs
 from PIL import Image, ImageTk
 from ctypes import windll
 
 import logs
-from tabs import TabManager
+from tabs import TabManager, Project
 from cfg import ConfigManager
 from style import StyleManager
-from controls import ControlFrame
+from controls import ProjectFrame
 from utils import make_button, set_widget_image
 from constants import (
     IMAGES_DIR,
@@ -27,7 +27,7 @@ log = logging.getLogger(__name__)
 class DropMenu(ttk.Frame):
     def __init__(self, root):
         super().__init__(
-            root.window, width=150, height=180, 
+            root.window, width=150, height=120, # 190, 
             style='Menu.TFrame'
         )
         self.root = root
@@ -50,8 +50,9 @@ class DropMenu(ttk.Frame):
         ttk.Button(  # create a new project (unfunctional)
             self, text='Create New', style='MenuBtn.TLabel'
         ).grid(column=0, row=2, sticky='we', padx=5)
-        ttk.Button(  # add existing project from file (unfunctional)
-            self, text='Add Existing', style='MenuBtn.TLabel'
+        ttk.Button(  # add existing project from file
+            self, text='Add From Folder', style='MenuBtn.TLabel',
+            command=lambda: self.on_btn(self.on_add_from_folder)
         ).grid(column=0, row=3, sticky='we', padx=5)
         ttk.Button(  # close currently selected project tab (unfunctional)
             self, text='Close Project Tab', style='MenuBtn.TLabel'
@@ -60,34 +61,55 @@ class DropMenu(ttk.Frame):
             self, text='Remove Project', style='MenuBtn.TLabel'
         ).grid(column=0, row=5, sticky='we', padx=5)
         
-        # debug menu options
-        ttk.Button(  # add a new empty tab
-            self, text='Add Tab', style='MenuBtn.TLabel', 
-            command=lambda: self.on_btn(self.on_add_tab)
-        ).grid(column=0, row=6, sticky='we', padx=5)
-        ttk.Button(  # add a new tab with custom text
-            self, text='Add Tab With Text', style='MenuBtn.TLabel',
-            command=lambda: self.on_btn(self.on_add_text_tab)
-        ).grid(column=0, row=7, sticky='we', padx=5)
-        ttk.Button(  # add a tab tied to a project (unfunctional)
-            self, text='Add Real Tab', style='MenuBtn.TLabel',
-            command=lambda: self.on_btn(self.on_add_real_tab)
-        ).grid(column=0, row=8, sticky='we', padx=(5, 7))
+        # ttk.Frame(self, style='Border.TFrame'
+        # ).grid(column=0, row=6, sticky='we', padx=10, pady=5)
+        
+        # # debug menu options
+        # ttk.Button(  # add a new empty tab
+        #     self, text='Add Tab', style='MenuBtn.TLabel', 
+        #     command=lambda: self.on_btn(self.on_add_tab)
+        # ).grid(column=0, row=7, sticky='we', padx=5)
+        # ttk.Button(  # add a new tab with custom text
+        #     self, text='Add Tab With Text', style='MenuBtn.TLabel',
+        #     command=lambda: self.on_btn(self.on_add_text_tab)
+        # ).grid(column=0, row=8, sticky='we', padx=5)
+        # ttk.Button(  # add a tab tied to a project (unfunctional)
+        #     self, text='Add Real Tab', style='MenuBtn.TLabel',
+        #     command=lambda: self.on_btn(self.on_add_real_tab)
+        # ).grid(column=0, row=9, sticky='we', padx=(5, 7))
         
     def on_btn(self, command) -> None:
         self.root.titlebar.on_menu()
         command()
         
-    def on_add_tab(self, title:str|None=None) -> None:
-        title = f'Tab Number {len(self.root.tabs.tabs)}' if title is None else title
-        self.root.tabs.add_tab(title)
-    
-    def on_add_text_tab(self) -> None:
-        title = simpledialog.askstring('Tab Name', 'Provide a name for this new tab:')
-        self.on_add_tab(title)
-    
-    def on_add_real_tab(self) -> None:
-        pass
+    def on_add_from_folder(self):
+        path = filedialog.askdirectory(
+            title='Open Project',
+            mustexist=True
+        )
+        if not path: return
+        env_path = filedialog.askdirectory(
+            title='Choose Python Environment',
+            mustexist=True
+        )
+        if not env_path: return
+        name = simpledialog.askstring(
+            title='Project Name',
+            prompt='Name this project:',
+        )
+        if not name: return
+        project = Project(
+            self.root, 
+            name, 
+            path,
+            env_path
+        )
+        self.root.cfg.data['projects'][project.name] = {
+            "path": path,
+            "env_path": env_path
+        }
+        self.root.cfg.write()
+        self.root.tabs.add_tab(project)
 
 
 class Titlebar(ttk.Frame):
@@ -267,11 +289,12 @@ class Root:
         # self.menu = MenuManager(self)
         log.info('Initialized all managers')
         
-        self.control_frame = ControlFrame(self, master=self.win_border)
-        self.control_frame.pack(side='bottom', fill='both', expand=True)
+        self.project_frame = ProjectFrame(self, master=self.win_border)
+        self.project_frame.pack(side='bottom', fill='both', expand=True)
+        self.tabs.auto_load_tabs()
         
         self.paned_window.add(self.tabs, minsize=25)
-        self.paned_window.add(self.control_frame, minsize=20)
+        self.paned_window.add(self.project_frame, minsize=5)
         
         self.style.switch_theme('light')
 
