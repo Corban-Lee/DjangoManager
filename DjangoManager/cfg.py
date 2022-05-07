@@ -14,8 +14,10 @@ class ConfigManager:
     data: dict = {}
     _default: dict = {
         'tabs': {
-            'trough_height': 25
-        }
+            'trough_height': 25,
+            'last_tab': ''
+        },
+        'projects': {}
     }
     
     def __init__(self, root):
