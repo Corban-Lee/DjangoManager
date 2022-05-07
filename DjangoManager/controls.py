@@ -9,72 +9,88 @@ log = logging.getLogger(__name__)
 
 
 class ControlFrame(ttk.Frame):
-    def __init__(self, root, master):
-        super().__init__(master, style='Control.TFrame')
+    def __init__(self, master):
+        super().__init__(master, style='Controls.TFrame')
+        self.window = master.root.window
+        self.root = master.root
         
-        paned_window = tkinter.PanedWindow(self, orient='horizontal', background='#a3a2a2', sashwidth=1, bd=0)
-        paned_window.pack(fill='both', expand=True)
+        # top border
+        ttk.Frame(self, style='Border.TFrame'
+        ).pack(side='top', fill='x')
         
-        project_pane = ttk.Frame(paned_window)
-        project_pane.columnconfigure(index=0, weight=1)
-        paned_window.add(project_pane, minsize=200)
-        paned_window.add(ttk.Frame(paned_window), minsize=300)
+        ttk.Button(self, text='Close Project'
+        ).pack(side='right', padx=(0, 10), pady=10)
+        ttk.Button(self, text='Edit Project'
+        ).pack(side='right', padx=(0, 10), pady=10)
         
-        self.project_header = tkinter.StringVar(value='Project Title Here')
-        self.project_path = tkinter.StringVar(value='C:/path/to/project')
-        self.environment_path = tkinter.StringVar(value='C:/path/to/environment')
+        ttk.Button(self, text='Run Server'
+        ).pack(side='left', padx=(10, 0), pady=10)
+        ttk.Button(self, text='Migrate'
+        ).pack(side='left', padx=(10, 0), pady=10)
+        ttk.Button(self, text='Make Migrations'
+        ).pack(side='left', padx=(10, 0), pady=10)
         
-        # project header
-        ttk.Label(project_pane, textvariable=self.project_header, style='Header.TLabel'
-        ).grid(column=0, row=0, sticky='we', padx=15, pady=15)
-        
-        # project header (control)
-        ttk.Label(project_pane, text='Project Title'
-        ).grid(column=0, row=1, sticky='w', padx=15, pady=(0, 3))
-        ttk.Entry(project_pane, textvariable=self.project_header
-        ).grid(column=0, row=2, sticky='we', padx=15, pady=(0, 10))
-       
-        # project path
-        ttk.Label(project_pane, text='Project Location'
-        ).grid(column=0, row=3, sticky='w', padx=15, pady=(0, 3))
-        ttk.Entry(project_pane, textvariable=self.project_path,
-        ).grid(column=0, row=4, sticky='we', padx=15, pady=(0, 10))
-        
-        # environment path
-        ttk.Label(project_pane, text='Environment Location',
-        ).grid(column=0, row=5, sticky='w', padx=15, pady=(0, 3))
-        ttk.Entry(project_pane, textvariable=self.environment_path,
-        ).grid(column=0, row=6, sticky='we', padx=15, pady=(0, 15))
-        
-        # update attributes
-        # btn_border = ttk.Frame(project_pane, style='Border.TFrame')
-        # btn_border.grid(column=0, row=7, sticky='we', padx=15, pady=(5, 15))
-        ttk.Button(project_pane, text='Save Changes'
-        ).grid(column=0, row=7, sticky='we', padx=15, pady=(5, 15))
-        #).pack(fill='both', expand=True, padx=1, pady=1)
-
-        # give all button and entry widgets borders
-        # this is really bad: deletes and reconstructs widgets to do this.
-        for widget in project_pane.winfo_children():
+        for widget in self.winfo_children():
             if not isinstance(widget, (ttk.Button, ttk.Entry)):
                 continue
 
-            grid_details = widget.grid_info()
-            widget.grid_forget()
+            pack_details = widget.pack_info()
+            widget.pack_forget()
 
-            border = ttk.Frame(project_pane, style='Border.TFrame')
-            border.grid(grid_details)
+            border = ttk.Frame(self, style='Border.TFrame')
+            border.pack(pack_details)
             
             widget_clone = clone_widget(widget, parent=border)
             widget_clone.pack(fill='both', expand=True, padx=1, pady=1)
             widget.destroy()
+
+class ProjectFrame(ttk.Frame):
+    def __init__(self, root, master):
+        super().__init__(master)
+        self.window = root.window
+        self.root = root
         
-        ###########################################
-        # console pane
+        self.project_name = tkinter.StringVar()
+        self.project_path = tkinter.StringVar()
+        self.project_env_path = tkinter.StringVar()
         
-        console_pane = ttk.Frame(paned_window)
-        paned_window.add(console_pane, minsize=200)
+        # overlay when no project selected
+        self.modem = ttk.Frame(self)
+        ttk.Label(
+            self.modem, style='Header.TLabel',
+            text='Open a project to continue.'
+        ).place(relx=.5, rely=.5, anchor='center')
         
-        console = tkinter.Text(console_pane, width=1, height=1, bd=0)
-        console.pack(fill='both', expand=True)
-        console.insert('insert', 'console output here:')
+        self.controls = ControlFrame(self)
+        self.controls.pack(side='bottom', fill='x')
+        
+        console = ttk.Frame(self)
+        console.pack(side='right', fill='both', expand=True)
+        ttk.Label(console, text='TODO: output terminal here'
+        ).place(relx=.5, rely=.5, anchor='center')
+        
+        ttk.Frame(self, style='Border.TFrame'
+        ).pack(side='right', fill='y')
+        
+        container = ttk.Frame(self)
+        container.pack(side='left', fill='both', expand=True)
+
+        ttk.Label(
+            container, style='Header.TLabel', 
+            textvariable=self.project_name
+        ).grid(column=0, row=0, sticky='w', padx=15, pady=15)    
+        
+        self.unload('all')  
+        
+    def load(self, project) -> None:
+        self.project_name.set(project.name)
+        self.project_path.set(project.path)
+        self.project_env_path.set(project.env_path)
+        self.modem.place_forget()
+        
+    def unload(self, project:str) -> None:
+        print('unloaded project(s):', project)
+        if project == 'all':
+            self.modem.place(x=0, y=0, relw=1, relh=1, anchor='nw')
+            self.modem.lift()
+        
