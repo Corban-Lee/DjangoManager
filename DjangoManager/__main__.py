@@ -27,11 +27,11 @@ log = logging.getLogger(__name__)
 class DropMenu(ttk.Frame):
     def __init__(self, root):
         super().__init__(
-            root.window, width=150, height=120, # 190, 
+            root.window, width=130, height=120, # 190, 
             style='Menu.TFrame'
         )
         self.root = root
-        self.grid_propagate(False)
+        # self.grid_propagate(False)
         self.columnconfigure(index=0, weight=1)
         
         # create border on bottom and right sides
@@ -59,7 +59,7 @@ class DropMenu(ttk.Frame):
         ).grid(column=0, row=4, sticky='we', padx=5)
         ttk.Button(  # delete currently selected project (unfunctional)
             self, text='Remove Project', style='MenuBtn.TLabel'
-        ).grid(column=0, row=5, sticky='we', padx=5)
+        ).grid(column=0, row=5, sticky='we', padx=5, pady=(0, 8))
         
         # ttk.Frame(self, style='Border.TFrame'
         # ).grid(column=0, row=6, sticky='we', padx=10, pady=5)
@@ -83,6 +83,10 @@ class DropMenu(ttk.Frame):
         command()
         
     def on_add_from_folder(self):
+        
+        # TODO: add index to project so reloaded tabs arent in
+        # a different order on restart.
+        
         path = filedialog.askdirectory(
             title='Open Project',
             mustexist=True
@@ -104,11 +108,11 @@ class DropMenu(ttk.Frame):
             path,
             env_path
         )
+        # update config
         self.root.cfg.data['projects'][project.name] = {
             "path": path,
             "env_path": env_path
         }
-        self.root.cfg.write()
         self.root.tabs.add_tab(project)
 
 
@@ -306,6 +310,7 @@ class Root:
     def on_exit(self) -> SystemExit:
         """Properly exits the app"""
         log.info('exiting app')
+        self.cfg.write()  # save config
         self.window.destroy()
         raise SystemExit
     

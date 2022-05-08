@@ -1,7 +1,9 @@
 import logging
+from select import select
 import tkinter
 from tkinter import ttk
 from PIL import Image, ImageTk
+from datetime import datetime
 
 from utils import text_length_check
 from constants import IMAGES_DIR
@@ -11,6 +13,10 @@ log = logging.getLogger(__name__)
 
 
 class Project:
+    # maybe use a dataclass ??
+    last_run: datetime = None
+    last_migration: datetime = None
+    
     def __init__(self, root, name:str, path:str, env_path:str):
         self.root = root
         self.name = name
@@ -20,23 +26,32 @@ class Project:
 
 class Tab(ttk.Frame):
     """
-        Tab widget. 
-        Can be dragged along a trough and moved between other tab widgets.
+        Tab widget. Can be dragged along a trough and moved between 
+        other tab widgets.
     """
     selected: bool = False
 
     def __init__(self, master, project):
-        super().__init__(master, style=f'Tab.TFrame')
-        self.project = project
-        self.bind('<Button-1>', self.drag)
+        super().__init__(master, style=f'Tab.TFrame', width=100)
+        self.project: Project = project
         self.rowconfigure(index=1, weight=1)
+        self.bind('<Button-1>', self.drag)
         
-        # text displayed on the tab
-        self.text = ttk.Label(self, text=text_length_check(project.name, 20))
-        self.text.grid(column=1, row=1, sticky='nsew')
-        self.text.bind('<Button-1>', self.drag)
+        # add widget to the end of the trough. This will automatically
+        # put the widget on the right side of existing tab widgets.
+        self.pack(side='left', fill='y')
+        
+        self.text = tkinter.StringVar(value=project.name)
+        self.text.trace_add(
+            'write', 
+            lambda v, *_: v.set(text_length_check(v.get(), 20))
+        )
+        
+        self.label = ttk.Label(self, textvariable=self.text)
+        self.label.grid(column=1, row=1, sticky='nsew')
+        self.label.bind('<Button-1>', self.drag)
 
-        # get light and dark 'x' images for close button
+        # get light and dark 'x' images for the close button
         self.close_imgs = {}
         for color in ('light', 'dark'):
             img = Image.open(f'{IMAGES_DIR}/close_{color}.png')
@@ -44,57 +59,83 @@ class Tab(ttk.Frame):
             img = ImageTk.PhotoImage(img)
             self.close_imgs[color] = img
         
-        self.close_btn = ttk.Button(self, command=self._destroy, cursor='hand2')
+        self.close_btn = ttk.Button(
+            self, cursor='hand2',
+            command=self._destroy
+        )
         self.close_btn.grid(column=2, row=1, sticky='nes')
 
-        right_sep = ttk.Frame(self, style='TabSeparator.TFrame', width=1)
-        right_sep.grid(column=3, row=1, sticky='ns')
+        right_border = ttk.Frame(
+            self, width=1,
+            style='TabSeparator.TFrame'
+        )
+        right_border.grid(column=3, row=1, sticky='ns')
 
-        self.left_sep = ttk.Frame(self, style='TabSeparator.TFrame', width=1)
+        # dont grid this border. it should only be shown when the tab
+        # is being dragged by the user. It should be removed when the
+        # tab is released by the user.
+        self.left_border = ttk.Frame(
+            self, width=1,
+            style='TabSeparator.TFrame'
+        )
 
-        # reserves a space when moving the tab
+        # this widget will replace the tab's original position when the
+        # tab is being moved. It will be ungridded when the tab is 
+        # released by the user.
         self.reserved_space = ttk.Frame(self.master)
         self.reserved_space.pack_propagate(False)
-        reserved_vert_sep = ttk.Frame(self.reserved_space, style='TabSeparator.TFrame', width=1)
-        reserved_vert_sep.pack(side='right', fill='y')
+        reserved_vert_border = ttk.Frame(
+            self.reserved_space, width=1,
+            style='TabSeparator.TFrame'
+        )
+        reserved_vert_border.pack(side='right', fill='y')
         
+        # deselecting changes all of the child widget styles to their
+        # defaults. So instead of setting styles above where the 
+        # children have been created, just call deselect to set the 
+        # style. This means that code hasn't been repeated.
         self.deselect()
-        self.pack(side='left', fill='y')
         
-        log.debug('Initialized a new tab')
+        log.debug(f'initialized tab with name: {self.text.get()}')
         
     def select(self):
-        assert not self.selected
+        """Called when the tab is clicked"""
         self.selected = True
-        
-        self.config(style='SelectedTab.TFrame')
-        self.text.config(style='SelectedTabText.TLabel')
-        self.close_btn.config(style='SelectedTabBtn.TLabel')
-        
-        # get 'x' image for close button
-        img = self.close_imgs['dark'] # ['light']
-        self.close_btn.image = img
-        self.close_btn.config(image=img)
+        self.update_style()
     
     def deselect(self):
+        """Called when a different instance of Tab is selected"""
         self.selected = False
+        self.update_style()
         
-        self.config(style='Tab.TFrame')
-        self.text.config(style='TabText.TLabel')
-        self.close_btn.config(style='TabBtn.TLabel')
+    def update_style(self, select_override:bool=None):
+        """Updates this tab's style and updates it's childrens style"""
+        s = select_override if select_override is not None else self.selected
+        if s:
+            style = 'SelectedTab.TFrame'
+            label_style = 'SelectedTabText.TLabel'
+            button_style = 'SelectedTabBtn.TLabel'
+            image_colour = 'dark'
+        else:
+            style = 'Tab.TFrame'
+            label_style = 'TabText.TLabel'
+            button_style = 'TabBtn.TLabel'
+            image_colour = 'dark'
+            
+        # change styles to active varients.
+        self.config(style=style)
+        self.label.config(style=label_style)
+        self.close_btn.config(style=button_style)
         
-        # get 'x' image for close button
-        img = self.close_imgs['dark']
+        # change the 'x' image for the close button to match the 
+        # background colours.
+        img = self.close_imgs[image_colour]
         self.close_btn.image = img
         self.close_btn.config(image=img)
             
     def _destroy(self):
-        self.master.tabs.remove(self)
-        self.master.on_tab_destroy(self)
-        log.debug('Destroyed a tab')
-     
-    def _snap_to_pos(self, event:tkinter.Event):
-        self.pack(side='left', fill='y')
+        self.master.remove_tab(self)
+        log.debug(f'destroyed tab with name: {self.text.get()}')
 
     def drag(self, event:tkinter.Event) -> None:
         """Allows the user to drag the tab"""
@@ -107,7 +148,7 @@ class Tab(ttk.Frame):
         self.reserved_space.pack(side='left', fill='y', before=self)
         
         # add left side border while moving
-        self.left_sep.grid(column=0, row=1, sticky='ns')
+        self.left_border.grid(column=0, row=1, sticky='ns')
         
         # if the tab isn't raised it can appear below other
         # tabs and reserved space
@@ -121,7 +162,7 @@ class Tab(ttk.Frame):
             """Left mouse button is released"""
             
             # create a list of everything on the tab trough excluding self
-            self.left_sep.grid_forget()
+            self.left_border.grid_forget()
             items = self.master.tabs.copy()
             items.append(self.reserved_space)
             items.remove(self)
@@ -215,9 +256,8 @@ class TabManager(ttk.Frame):
         self.tabs.append(Tab(self, project))
         
     def on_trough_resize(self, event:tkinter.Event):
-        """Writes the current height of the trough to the config file"""
+        """Writes the current height of the trough to the config"""
         self.root.cfg.data['tabs']['trough_height'] = self.winfo_height()
-        self.root.cfg.write()
         
     def on_tab_select(self, clicked_tab:Tab):
         """Deselects any tab that wasn't the last clicked tab"""
@@ -229,12 +269,14 @@ class TabManager(ttk.Frame):
         clicked_tab.select()
         self.selected_tab = clicked_tab
         self.root.project_frame.load(clicked_tab.project)
+        
+        # update config
         self.root.cfg.data['tabs']['last_tab'] = clicked_tab.project.name
-        self.root.cfg.write()
 
 
-    def on_tab_destroy(self, tab:Tab):
-        """Process destroyed tabs"""
+    def remove_tab(self, tab:Tab):
+        """Remove and destroy a tab"""
+        self.tabs.remove(tab)
         
         # try to select another tab if any exist
         if self.tabs:
@@ -244,12 +286,16 @@ class TabManager(ttk.Frame):
         else:
             unload = 'all'
             
-        tab.destroy()
         self.root.project_frame.unload(unload)
         try:
             self.on_tab_select(new_tab)
         except UnboundLocalError:
             pass
+        
+        # update config            
+        self.root.cfg.data['projects'].pop(tab.project.name)
+
+        tab.destroy()
         
     def auto_load_tabs(self) -> None:
         data = self.root.cfg.data
