@@ -1,5 +1,4 @@
 import logging
-from select import select
 import tkinter
 from tkinter import ttk
 from PIL import Image, ImageTk
@@ -55,7 +54,7 @@ class Tab(ttk.Frame):
         self.close_imgs = {}
         for color in ('light', 'dark'):
             img = Image.open(f'{IMAGES_DIR}/close_{color}.png')
-            img = img.resize((15, 15))
+            img = img.resize((13, 13))
             img = ImageTk.PhotoImage(img)
             self.close_imgs[color] = img
         

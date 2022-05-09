@@ -40,6 +40,6 @@ def setup(appname:str, version:str, dirs:AppDirs) -> None:
     handler = logging.StreamHandler(file)
     handler.setLevel(logging.DEBUG)
     handler.setFormatter(logging.Formatter('[%(asctime)s] %(name)s %(levelname)s: %(message)s'))
-    logging.basicConfig(level=logging.DEBUG, handlers=[handler])
+    logging.basicConfig(level=logging.DEBUG, handlers=(handler,))
     log.debug(f'Starting {appname} {version}')
     _destroy_old_logs(dirs)

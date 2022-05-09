@@ -70,9 +70,11 @@ class ProjectFrame(ttk.Frame):
         self.project_path = tkinter.StringVar()
         self.project_env_path = tkinter.StringVar()
         self.project_last_run = tkinter.StringVar(
+            # temp
             value=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
         )
         self.project_last_migration = tkinter.StringVar(
+            # temp
             value=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
         )
         
