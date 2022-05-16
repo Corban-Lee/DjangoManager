@@ -1,3 +1,4 @@
+from binascii import Error
 import os
 import logging
 from tkinter import ttk, font
@@ -40,9 +41,15 @@ class StyleManager(ttk.Style):
                 ]})
             ]
         )
-        # TODO: apply tk settings here
-        # for widget in get_all_children(self.master):
-        #     break 
+        # manually apply tkinter (non-ttk) styles
+        tk_settings = self.tk_settings[self.theme_use()]
+        for widget in get_all_children(self.master):
+            try:
+                data = tk_settings[widget.__class__.__name__]
+                widget.configure(**data['configure'])
+            except KeyError: 
+                pass
+        
         log.info(f"Switched to theme: '{theme_name}'")
             
     def _create_theme(self, filename:str) -> None:

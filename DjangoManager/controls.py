@@ -1,12 +1,29 @@
+import sys
 import logging
 import tkinter
 from tkinter import ttk
 from datetime import datetime, timedelta
+from subprocess import Popen, PIPE
+from threading import Thread
 
 from utils import clone_widget
+from tabs import Project
 
 
 log = logging.getLogger(__name__)
+
+
+class Console(tkinter.Text):
+    def __init__(self, master:ttk.Widget, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        
+        
+    def write(self, text) -> None:
+        self.insert('end', text)
+        self.see('end')  # auto scroll to bottom
+        
+    def flush(self) -> None:
+        pass
 
 
 class ControlFrame(ttk.Frame):
@@ -37,6 +54,7 @@ class ControlFrame(ttk.Frame):
             command=self.on_make_migrations
         ).pack(side='left', padx=(10, 0), pady=10)
         
+        return
         for widget in self.winfo_children():
             if not isinstance(widget, (ttk.Button, ttk.Entry)):
                 continue
@@ -52,13 +70,29 @@ class ControlFrame(ttk.Frame):
             widget.destroy()
             
     def on_run(self) -> None:
-        pass
-    
+        
+        def execute():
+            self.master.tab.project.is_running = True
+            project: Project = self.master.tab.project
+            cmd = [
+                project.env_path + '/Scripts/Python.exe',
+                project.path + '/manage.py', 
+                'runserver', '0.0.0.0:8000'
+            ]
+            p = Popen(cmd, stdout=PIPE, bufsize=1, text=True)
+            while p.poll() is None:
+                msg = p.stdout.readline().strip()
+                if msg:
+                    print(msg)
+                
+        thread = Thread(target=execute)
+        thread.start()
+
     def on_migrate(self) -> None:
-        pass
-    
+        print('migrating ...')
+
     def on_make_migrations(self) -> None:
-        pass
+        print('making migrations ...')
 
 class ProjectFrame(ttk.Frame):
     def __init__(self, root, master):
@@ -78,6 +112,9 @@ class ProjectFrame(ttk.Frame):
             value=datetime.now().strftime('%d/%m/%Y - %H:%M:%S')
         )
         
+        paned_window = tkinter.PanedWindow(self)
+        paned_window.pack(fill='both', expand=True)
+        
         # overlay when no project selected
         self.modem = ttk.Frame(self)
         ttk.Label(
@@ -88,17 +125,9 @@ class ProjectFrame(ttk.Frame):
         self.controls = ControlFrame(self)
         self.controls.pack(side='bottom', fill='x')
         
-        console = ttk.Frame(self, width=300)
-        console.pack(side='right', fill='both')
-        ttk.Label(console, text='TODO: output terminal here'
-        ).place(relx=.5, rely=.5, anchor='center')
-        
-        ttk.Frame(self, style='Border.TFrame'
-        ).pack(side='right', fill='y')
+        self.console = Console(paned_window, width=1, height=1, borderwidth=0)
         
         container = ttk.Frame(self)
-        container.pack(side='left', fill='both', expand=True)
-
         ttk.Label(
             container, style='Header.TLabel', 
             textvariable=self.project_name
@@ -131,13 +160,18 @@ class ProjectFrame(ttk.Frame):
         ttk.Label(container, textvariable=self.project_last_migration
         ).grid(column=1, row=4, sticky='w')
         
+        paned_window.add(container, minsize=200, stretch='first')
+        paned_window.add(self.console, minsize=200, stretch='first')
         self.unload('all')  
         
-    def load(self, project) -> None:
+    def load(self, tab) -> None:
+        self.tab = tab
+        project = tab.project
         self.project_name.set(project.name)
         self.project_path.set(project.path)
         self.project_env_path.set(project.env_path)
         self.modem.place_forget()
+        sys.stdout = self.console
         
     def unload(self, project:str) -> None:
         if project == 'all':

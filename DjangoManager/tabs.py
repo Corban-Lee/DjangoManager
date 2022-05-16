@@ -1,6 +1,7 @@
 import logging
 import tkinter
 from tkinter import ttk
+from tkinter import messagebox
 from PIL import Image, ImageTk
 from datetime import datetime
 
@@ -15,6 +16,7 @@ class Project:
     # maybe use a dataclass ??
     last_run: datetime = None
     last_migration: datetime = None
+    is_running: bool = False
     
     def __init__(self, root, name:str, path:str, env_path:str):
         self.root = root
@@ -261,13 +263,20 @@ class TabManager(ttk.Frame):
     def on_tab_select(self, clicked_tab:Tab):
         """Deselects any tab that wasn't the last clicked tab"""
         for tab in self.tabs:
+            if tab.project.is_running:
+                messagebox.showerror(
+                    title='Error',
+                    message='Cant change tab when project is running'
+                )
+                return
+            
             if tab.selected:
                 tab.deselect()
                 break  
             
         clicked_tab.select()
         self.selected_tab = clicked_tab
-        self.root.project_frame.load(clicked_tab.project)
+        self.root.project_frame.load(clicked_tab)
         
         # update config
         self.root.cfg.data['tabs']['last_tab'] = clicked_tab.project.name

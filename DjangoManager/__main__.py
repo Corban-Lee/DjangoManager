@@ -42,24 +42,24 @@ class DropMenu(ttk.Frame):
         
         ttk.Label(
             self, text='Project Menu', style='MenuHeader.TLabel'
-        ).grid(column=0, row=0, sticky='we', padx=5, pady=(7, 0))
+        ).grid(column=0, row=0, sticky='we', padx=(0, 2), pady=(7, 0))
         ttk.Frame(self, style='Border.TFrame'
-        ).grid(column=0, row=1, sticky='we', padx=10, pady=(3, 5))
+        ).grid(column=0, row=1, sticky='we', padx=10, pady=(4, 7))
         
         # project menu options
         ttk.Button(  # create a new project (unfunctional)
             self, text='Create New', style='MenuBtn.TLabel'
-        ).grid(column=0, row=2, sticky='we', padx=5)
+        ).grid(column=0, row=2, sticky='we', padx=(0, 2))
         ttk.Button(  # add existing project from file
             self, text='Add From Folder', style='MenuBtn.TLabel',
             command=lambda: self.on_btn(self.on_add_from_folder)
-        ).grid(column=0, row=3, sticky='we', padx=5)
+        ).grid(column=0, row=3, sticky='we', padx=(0, 2))
         ttk.Button(  # close currently selected project tab (unfunctional)
             self, text='Close Project Tab', style='MenuBtn.TLabel'
-        ).grid(column=0, row=4, sticky='we', padx=5)
+        ).grid(column=0, row=4, sticky='we', padx=(0, 2))
         ttk.Button(  # delete currently selected project (unfunctional)
             self, text='Remove Project', style='MenuBtn.TLabel'
-        ).grid(column=0, row=5, sticky='we', padx=5, pady=(0, 8))
+        ).grid(column=0, row=5, sticky='we', padx=(0, 2), pady=(0, 10))
         
         # ttk.Frame(self, style='Border.TFrame'
         # ).grid(column=0, row=6, sticky='we', padx=10, pady=5)

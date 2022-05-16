@@ -3,7 +3,18 @@
     "parent": "default",
     "default_font": ["Segoe UI", 9],
     "tk_settings": {
-
+        "PanedWindow": {
+            "configure": {
+                "background": "#A5A4A5",
+                "borderwidth": 0,
+                "sashwidth": 1
+            }
+        },
+        "Text": {
+            "configure": {
+                "borderwidth": 0
+            }
+        }
     },
     "ttk_settings": {
         "TLabel": {
@@ -178,25 +189,25 @@
         },
         "SelectedTab.TFrame": {
             "configure": {
-                "background": "gray100",
+                "background": "gray95",
                 "relief": "flat"
             }
         },
         "SelectedTabText.TLabel": {
             "configure": {
-                "background": "gray100",
+                "background": "gray95",
                 "padding": [5, 1, 25, 0]
             }
         },
         "SelectedTabBtn.TLabel": {
             "configure": {
-                "background": "gray100",
+                "background": "gray95",
                 "padding": [5, 0, 5, 0]
             },
             "map": {
                 "background": [
-                    ["pressed", "gray85"],
-                    ["active", "gray90"]
+                    ["pressed", "gray80"],
+                    ["active", "gray85"]
                 ]
             }
         }
